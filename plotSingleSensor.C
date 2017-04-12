@@ -6,6 +6,7 @@
 #include <TProfile.h>
 #include <TCanvas.h>
 #include <TStyle.h>
+#include <TF1.h>
 
 void plotSingleSensor(Char_t *sensor, Char_t *file){
 
@@ -19,9 +20,6 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   TString nam1B;
   TString nam2T;
   TString nam2B;
-  TString nam3T;
-  TString nam3B;
-  // x2	 
   TString nam3T;
   TString nam3B;
   // x2	 
@@ -40,8 +38,6 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   TString nam1BS;
   TString nam2TS;
   TString nam2BS;
-  TString nam3TS;
-  TString nam3BS;
   TString nam3TS;
   TString nam3BS;
   TString nam4TS;
@@ -231,22 +227,22 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   TH1F* his7bs = (TH1F*)f1->Get(nam7B.Data());
   TH1F* his8bs = (TH1F*)f1->Get(nam8B.Data());
   
-  his1->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his1s->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his2->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his2s->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his7->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his7s->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his8->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his8s->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his1b->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his1bs->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his2b->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his2bs->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his7b->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his7bs->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his8b->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his8bs->GetFunction("gaus")->SetBit(TF1::kNotDraw);
+  ((TF1*)his1->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his1s->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his2->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his2s->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his7->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his7s->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his8->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his8s->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his1b->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his1bs->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his2b->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his2bs->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his7b->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his7bs->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his8b->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  ((TF1*)his8bs->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
   
   TString title = "unbiased u residual sensor "; title += sensName.Data(); title += " axial top";
   his1->SetTitle(title.Data());
@@ -386,7 +382,7 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   his6s->Draw("colz");  
   
   cBot->Divide(5,4);
-  Int_t win=1; cBot->cd(win);
+  win=1; cBot->cd(win);
   his1bs->Draw(); win++; cBot->cd(win);
   his1b->Draw(); win++; cBot->cd(win);
   his2bs->Draw(); win++; cBot->cd(win);
@@ -413,7 +409,7 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   cout << side.Data() << endl;
   TString out = "sensor_"; out+=side; out+="_top_Plots.gif";
   cTop->SaveAs(out.Data());
-  TString out = "sensor_"; out+=side; out+="_bot_Plots.gif";
+  out = "sensor_"; out+=side; out+="_bot_Plots.gif";
   cBot->SaveAs(out.Data());
 
 }
