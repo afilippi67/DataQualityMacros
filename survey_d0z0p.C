@@ -116,7 +116,8 @@ void survey_d0z0p(Char_t* filename){
   // find the first bin with zero content, this is the final bin
   // start form 500 MeV
   Int_t start = his5->FindBin(0.5);
-  for (Int_t i=start;i<his5->GetNbinsX();i++){
+  Int_t i;
+  for (i=start;i<his5->GetNbinsX();i++){
     binc = his5->GetBinContent(i);
     if(binc == 0.) break;
   }
