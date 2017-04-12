@@ -1,7 +1,7 @@
 # DataQualityMacros
 macros for alignment
 
-o plot a series of residual plots: makeQualityPlots.sh - usage:
+*** plot a series of residual plots: makeQualityPlots.sh - usage:
 
    ./makeQualityPlots.sh PathToRootFile/inputRootFile.root GeometryType
    
