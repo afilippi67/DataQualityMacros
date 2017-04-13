@@ -97,31 +97,43 @@ void plotXY_neg(Char_t* fname){
     hisname += "t_halfmodule_axial_sensor0";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();
+    TH1D *his;
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();
+    }else{
+      his = 0;
+    }
     ipad++;
     TString pd = "tp"; pd+=ipad;
     TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up);
-    his2->Draw("colz");
-    TF1 *fit = his->GetFunction("gaus");
-
+    Double_t low, up;
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up);
+      his2->Draw("colz");
+      TF1 *fit = his->GetFunction("gaus");
+    }
     hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_sensor0";
     layer = "L"; layer+=i; layer+= "TS"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();
+    }else{
+      his = 0;
+    }
     ipad++;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q","",low,up); his2->Draw("colz");
+      TF1 *fit = his->GetFunction("gaus");
+    }
   }
   //  ic = 19;
   for(Int_t i=4; i<7; i++){
@@ -130,59 +142,83 @@ void plotXY_neg(Char_t* fname){
     hisname += "t_halfmodule_axial_hole_sensor0";
     hisname2 += "t_halfmodule_axial_slot_sensor0";
     TH2D *hisOther = (TH2D*) f->Get(hisname2.Data());
-    Double_t norma = hisOther->GetMaximum();
+    Double_t norma = 1;
+    if(hisOther) norma = hisOther->GetMaximum();
     TString layer = "L"; layer+=i; layer+= "TAHo"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    his2->SetMaximum(norma);
-    TH1D *his = (TH1D*)his2->ProjectionY();
+    TH1D *his;
+    if(his2){
+      his2->SetMaximum(norma);
+      his = (TH1D*)his2->ProjectionY();
+    }else{
+      his = 0;
+    }
     ipad++;
     TString pd = "tp"; pd+=ipad;
     TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    TF1 *fit = his->GetFunction("gaus");
-    
+    Double_t low, up;
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
+      TF1 *fit = his->GetFunction("gaus");
+    }
     hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_hole_sensor0";
     layer = "L"; layer+=i; layer+= "TSHo"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();
+    }else{
+      his = 0;
+    }
     ipad++; ipad++;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
+      TF1 *fit = his->GetFunction("gaus");
+    }
     hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TASl";
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();     
+    if(his2){
+      his = (TH1D*)his2->ProjectionY(); 
+    }else{
+      his = 0;
+    }
     ipad--;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
+    }
     hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TSSl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();     
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();     
+    }else{
+      his = 0;
+    }
     ipad++; ipad++;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
+    }
   }
   cout << endl;
   cout << "------------------------" << endl;
@@ -253,7 +289,12 @@ void plotXY_neg(Char_t* fname){
     hisname += "b_halfmodule_stereo_sensor0";
     TString layer = "L"; layer+=i; layer+= "BS"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    if(his2) TH1D *his = (TH1D*)his2->ProjectionY();     
+    TH1D *his;
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();     
+    }else{
+      his = 0;
+    }
     ipad++;
     TString pd = "bp"; pd+=ipad;
     TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
@@ -265,7 +306,9 @@ void plotXY_neg(Char_t* fname){
     layer = "L"; layer+=i; layer+= "BA"; 
     his2 = (TH2D*) f->Get(hisname.Data());
     if(his2){
-      TH1D *his = (TH1D*)his2->ProjectionY();     
+      his = (TH1D*)his2->ProjectionY();     
+    }else{
+      his = 0;
     }
     ipad++;
     pd = "bp"; pd+=ipad;
@@ -278,8 +321,11 @@ void plotXY_neg(Char_t* fname){
     hisname += "b_halfmodule_stereo_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
+    TH1D *his;
     if(his2){
-      TH1D *his = (TH1D*)his2->ProjectionY();     
+      his = (TH1D*)his2->ProjectionY();     
+    }else{
+      his = 0;
     }
     ipad++; 
     TString pd = "bp"; pd+=ipad;
@@ -294,7 +340,9 @@ void plotXY_neg(Char_t* fname){
     layer = "L"; layer+=i; layer+= "BAHo"; 
     his2 = (TH2D*) f->Get(hisname.Data());
     if(his2){
-      TH1D *his = (TH1D*)his2->ProjectionY();     
+      his = (TH1D*)his2->ProjectionY();     
+    }else{
+      his = 0;
     }
     ipad++; ipad++;
     pd = "bp"; pd+=ipad;
@@ -306,7 +354,9 @@ void plotXY_neg(Char_t* fname){
     layer = "L"; layer+=i; layer+= "BSSl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
     if(his2){
-      TH1D *his = (TH1D*)his2->ProjectionY();     
+      his = (TH1D*)his2->ProjectionY();     
+    }else{
+      his = 0;
     }
     ipad--;
     pd = "bp"; pd+=ipad;
@@ -318,7 +368,9 @@ void plotXY_neg(Char_t* fname){
     layer = "L"; layer+=i; layer+= "BASl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
     if(his2){
-      TH1D *his = (TH1D*)his2->ProjectionY();     
+      his = (TH1D*)his2->ProjectionY();     
+    }else{
+      his = 0;
     }
     ipad++; ipad++;
     pd = "bp"; pd+=ipad;
