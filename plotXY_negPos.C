@@ -4,11 +4,13 @@
 #include <Riostream.h>
 #include <TCanvas.h>
 #include <TStyle.h>
+#include <TFile.h>
+#include <TH2D.h>
 
 void plotXY_negPos(char* fname){
 
   gStyle->SetOptStat(0);
-  Int_t w = 1.2; // number of RMS for gaussian fit
+  Float_t w = 1.2; // number of RMS for gaussian fit
   TString filename = fname;
   cout << filename.Data() << endl;
   TCanvas *cTop = new TCanvas("cTop","Residuals in lab frame, TOP", 800, 1000);
@@ -67,7 +69,7 @@ void plotXY_negPos(char* fname){
   y2 = y1; y1 = 1./13.*(--nrow)-space1;
   TPad *tp17 = new TPad("tp17","tp17",0.+off,y1,0.33+off,y2);
   TPad *tp18 = new TPad("tp18","tp18",0.66-off,y1,1.-off,y2);
-  cout << " TOP " << endl;
+
 
   cTop->cd();
   tp1->Draw();
@@ -99,7 +101,12 @@ void plotXY_negPos(char* fname){
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
     TH2D *his3 = (TH2D*) f->Get(hisname2.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();
+    TH1D *his;
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();
+    }else{
+      his = 0;
+    }
     if(layer.Contains("1")){his->SetFillColor(kRed);}
     else if(layer.Contains("2")){his->SetFillColor(kOrange);}
     else if(layer.Contains("3")){his->SetFillColor(kYellow);}
@@ -113,15 +120,18 @@ void plotXY_negPos(char* fname){
     TString pd = "tp"; pd+=ipad;
     TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up);
-    his2->SetMarkerColor(kMagenta);
-    his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
+    Double_t low, up;
     his3->Draw("");
     his2->Draw("same");
-    TF1 *fit = his->GetFunction("gaus");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up);
+      his2->SetMarkerColor(kMagenta);
+      his3->SetMarkerColor(kAzure+10);
+      his3->SetStats(kFALSE); his2->SetStats(kFALSE);
+      TF1 *fit = his->GetFunction("gaus");
+    }
     // cout << "sensor " << i << " axial mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
     // cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
     // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries() << endl;
@@ -131,32 +141,37 @@ void plotXY_negPos(char* fname){
     hisname2 = "h_xy_pos_module_L"; hisname2  += i;
     hisname2 += "t_halfmodule_stereo_sensor0";
     layer = "L"; layer+=i; layer+= "TS"; 
-    TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH2D *his3 = (TH2D*) f->Get(hisname2.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();
-    if(layer.Contains("1")){his->SetFillColor(kRed);}
-    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
-    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
-    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
-    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
-    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
-    if(layer.Contains("A")){his->SetFillStyle(3007);}
-    else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    his2 = (TH2D*) f->Get(hisname.Data());
+    his3 = (TH2D*) f->Get(hisname2.Data());
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();
+      if(layer.Contains("1")){his->SetFillColor(kRed);}
+      else if(layer.Contains("2")){his->SetFillColor(kOrange);}
+      else if(layer.Contains("3")){his->SetFillColor(kYellow);}
+      else if(layer.Contains("4")){his->SetFillColor(kGreen);}
+      else if(layer.Contains("5")){his->SetFillColor(kCyan);}
+      else if(layer.Contains("6")){his->SetFillColor(kBlue);}
+      if(layer.Contains("A")){his->SetFillStyle(3007);}
+      else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    }else{
+      his = 0;
+    }
     //    cTop->cd(ic); ic += 3;
     ipad++;
-    TString pd = "tp"; pd+=ipad;
-    TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
+    pd = "tp"; pd+=ipad;
+    pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q","",low,up); 
-    his2->SetMarkerColor(kMagenta);
-    his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
-    his3->Draw("");
-    his2->Draw("same");
-    TF1 *fit = his->GetFunction("gaus");
-
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q","",low,up); 
+      his2->SetMarkerColor(kMagenta);
+      his3->SetMarkerColor(kAzure+10);
+      his3->SetStats(kFALSE); his2->SetStats(kFALSE);
+      his3->Draw("");
+      his2->Draw("same");
+      TF1 *fit = his->GetFunction("gaus");
+    }
     // cout << "sensor " << i << " stereo mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
     // cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
     // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries() << endl;
@@ -171,161 +186,194 @@ void plotXY_negPos(char* fname){
     TString hisname3 = "h_xy_pos_module_L"; hisname3  += i;
     hisname3 += "t_halfmodule_axial_hole_sensor0";
     TH2D *hisOther = (TH2D*) f->Get(hisname2.Data());
-    Double_t norma = hisOther->GetMaximum();
+    Double_t norma;
+    if(hisOther){
+      norma=hisOther->GetMaximum();
+    }else{
+      norma = 1.;
+    }
     TString layer = "L"; layer+=i; layer+= "TAHo"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
     TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
-    his2->SetMaximum(norma);
-    TH1D *his = (TH1D*)his2->ProjectionY();
-    if(layer.Contains("1")){his->SetFillColor(kRed);}
-    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
-    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
-    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
-    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
-    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
-    if(layer.Contains("A")){his->SetFillStyle(3007);}
-    else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    if(his2) his2->SetMaximum(norma);
+    TH1D *his;
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();
+      if(layer.Contains("1")){his->SetFillColor(kRed);}
+      else if(layer.Contains("2")){his->SetFillColor(kOrange);}
+      else if(layer.Contains("3")){his->SetFillColor(kYellow);}
+      else if(layer.Contains("4")){his->SetFillColor(kGreen);}
+      else if(layer.Contains("5")){his->SetFillColor(kCyan);}
+      else if(layer.Contains("6")){his->SetFillColor(kBlue);}
+      if(layer.Contains("A")){his->SetFillStyle(3007);}
+      else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    }else{
+      his = 0;
+    }
     //    cTop->cd(ic); ic+=3;
     ipad++;
     TString pd = "tp"; pd+=ipad;
     TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); 
-    his2->SetMarkerColor(kMagenta);
+    Double_t low, up;
     his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
     his3->Draw("");
-    his2->Draw("same");
-    TF1 *fit = his->GetFunction("gaus");
-    
+    //    cout << i << " " << his3 << endl;
+    if(his){
+      his2->SetMarkerColor(kMagenta);
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();
+      his2->Draw("same");    
+      his->Fit("gaus","Q0","",low,up); 
+      his3->SetStats(kFALSE); 
+      his2->SetStats(kFALSE);
+      TF1 *fit = his->GetFunction("gaus");
+    }
     // cout << "sensor " << i << " axial hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
     // cout << "sensor " << i << " axial hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
     // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries() << endl;
 
-    cout << " xxxxxxxxxxxxxxxxx " << ipad << " " << his->GetName() << endl;
+    //    cout << " xxxxxxxxxxxxxxxxx " << ipad << " " << his->GetName() << endl;
 
     hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_hole_sensor0";
-    TString hisname3 = "h_xy_pos_module_L"; hisname3  += i;
+    hisname3 = "h_xy_pos_module_L"; hisname3  += i;
     hisname3 += "t_halfmodule_stereo_hole_sensor0";
-    TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
+    his3 = (TH2D*) f->Get(hisname3.Data());
     layer = "L"; layer+=i; layer+= "TSHo"; 
-    TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();
-    if(layer.Contains("1")){his->SetFillColor(kRed);}
-    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
-    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
-    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
-    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
-    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
-    if(layer.Contains("A")){his->SetFillStyle(3007);}
-    else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    his2 = (TH2D*) f->Get(hisname.Data());
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();
+      if(layer.Contains("1")){his->SetFillColor(kRed);}
+      else if(layer.Contains("2")){his->SetFillColor(kOrange);}
+      else if(layer.Contains("3")){his->SetFillColor(kYellow);}
+      else if(layer.Contains("4")){his->SetFillColor(kGreen);}
+      else if(layer.Contains("5")){his->SetFillColor(kCyan);}
+      else if(layer.Contains("6")){his->SetFillColor(kBlue);}
+      if(layer.Contains("A")){his->SetFillStyle(3007);}
+      else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    }else{
+      his = 0;
+    }
     //    cTop->cd(ic); ic-=1;
     ipad++; ipad++;
-    TString pd = "tp"; pd+=ipad;
-    TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
+    pd = "tp"; pd+=ipad;
+    pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); 
-    his2->SetMarkerColor(kMagenta);
     his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
     his3->Draw("");
-    his2->Draw("same");
-    TF1 *fit = his->GetFunction("gaus");
-
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      his2->SetMarkerColor(kMagenta);
+      //      his3->SetStats(kFALSE); his2->SetStats(kFALSE);
+      his2->Draw("same");
+      TF1 *fit = his->GetFunction("gaus");
+    }
     // cout << "sensor " << i << " stereo hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
     // cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
     // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries() << endl;
 
-    cout << " xxxxxxxxxxxxxxxxx " << ipad << " " << his->GetName() << endl;
+    //    cout << " xxxxxxxxxxxxxxxxx " << ipad << " " << his->GetName() << endl;
 
-    TString hisname = "h_xy_neg_module_L"; hisname  += i;
+    hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_slot_sensor0";
-    TString hisname3 = "h_xy_pos_module_L"; hisname3  += i;
+    hisname3 = "h_xy_pos_module_L"; hisname3  += i;
     hisname3 += "t_halfmodule_axial_slot_sensor0";
-    TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
+    his3 = (TH2D*) f->Get(hisname3.Data());
     layer = "L"; layer+=i; layer+= "TASl";
-    TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();     
-    if(layer.Contains("1")){his->SetFillColor(kRed);}
-    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
-    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
-    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
-    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
-    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
-    if(layer.Contains("A")){his->SetFillStyle(3007);}
-    else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    his2 = (TH2D*) f->Get(hisname.Data());
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();   
+      if(layer.Contains("1")){his->SetFillColor(kRed);}
+      else if(layer.Contains("2")){his->SetFillColor(kOrange);}
+      else if(layer.Contains("3")){his->SetFillColor(kYellow);}
+      else if(layer.Contains("4")){his->SetFillColor(kGreen);}
+      else if(layer.Contains("5")){his->SetFillColor(kCyan);}
+      else if(layer.Contains("6")){his->SetFillColor(kBlue);}
+      if(layer.Contains("A")){his->SetFillStyle(3007);}
+      else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    }else{
+      his = 0;
+    }
     //    cTop->cd(ic); ic+=3;
     ipad--;
-    TString pd = "tp"; pd+=ipad;
-    TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
+    pd = "tp"; pd+=ipad;
+    pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); 
-    his2->SetMarkerColor(kMagenta);
     his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
     his3->Draw("");
-    his2->Draw("same");
-    //    TF1 *fit = his->GetFunction("gaus");
-
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      his2->SetMarkerColor(kMagenta);
+      his3->SetStats(kFALSE); his2->SetStats(kFALSE);
+      if(his3){
+	if(his2) his2->Draw("same");
+      }
+      //    TF1 *fit = his->GetFunction("gaus");
+    }
     // cout << "sensor " << i << " axial slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
     // cout << "sensor " << i << " axial slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
     // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries() << endl;
 
-    cout << " xxxxxxxxxxxxxxxxx " << ipad << " " << his->GetName() << endl;
+    // cout << " ----------------here " << endl;
+    //    cout << " xxxxxxxxxxxxxxxxx " << ipad << " " << his->GetName() << endl;
 
     hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_slot_sensor0";
-    TString hisname3 = "h_xy_pos_module_L"; hisname3  += i;
+    hisname3 = "h_xy_pos_module_L"; hisname3  += i;
     hisname3 += "t_halfmodule_stereo_slot_sensor0";
-    TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
+    his3 = (TH2D*) f->Get(hisname3.Data());
     layer = "L"; layer+=i; layer+= "TSSl"; 
-    TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();     
-    if(layer.Contains("1")){his->SetFillColor(kRed);}
-    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
-    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
-    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
-    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
-    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
-    if(layer.Contains("A")){his->SetFillStyle(3007);}
-    else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    his2 = (TH2D*) f->Get(hisname.Data());
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();    
+      if(layer.Contains("1")){his->SetFillColor(kRed);}
+      else if(layer.Contains("2")){his->SetFillColor(kOrange);}
+      else if(layer.Contains("3")){his->SetFillColor(kYellow);}
+      else if(layer.Contains("4")){his->SetFillColor(kGreen);}
+      else if(layer.Contains("5")){his->SetFillColor(kCyan);}
+      else if(layer.Contains("6")){his->SetFillColor(kBlue);}
+      if(layer.Contains("A")){his->SetFillStyle(3007);}
+      else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    }else{
+      his = 0;
+    }
     //    cTop->cd(ic); ic+=1;
     ipad++; ipad++;
-    TString pd = "tp"; pd+=ipad;
-    TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
+    pd = "tp"; pd+=ipad;
+    pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); 
-    his2->SetMarkerColor(kMagenta);
-    his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
-    his3->Draw("");
-    his2->Draw("same");
-    //    TF1 *fit = his->GetFunction("gaus");
-
+    //    cout << i << " " << his3 << " " << endl;
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      his2->SetMarkerColor(kMagenta);
+      his3->SetMarkerColor(kAzure+10);
+      his3->SetStats(kFALSE); his2->SetStats(kFALSE);
+      his3->Draw("");
+      his2->Draw("same");
+      //    TF1 *fit = his->GetFunction("gaus");
+    }
     // cout << "sensor " << i << " stereo slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
     // cout << "sensor " << i << " stereo slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
     // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries()  << endl;
 
-    cout << " xxxxxxxxxxxxxxxxx " << ipad << " " << his->GetName() << endl;
+    //    cout << " xxxxxxxxxxxxxxxxx " << ipad << " " << his->GetName() << endl;
   }
   cout << endl;
   cout << "------------------------" << endl;
   cout << endl;
   cout << " BOTTOM " << endl;
-  Int_t nrow = 13;
-  Double_t space = 0.007;
-  Double_t space1 = 0.03;
-  Double_t y2 = 1./13*nrow-space1;
-  Double_t y1 = 1./13*(--nrow)-space1;
+  nrow = 13;
+  space = 0.007;
+  space1 = 0.03;
+  y2 = 1./13*nrow-space1;
+  y1 = 1./13*(--nrow)-space1;
   TPad *bp1 = new TPad("bp1","bp1",0.33,y1,0.66,y2);
   y2 = y1; y1 = 1./13.*(--nrow)-space1;
   TPad *bp2 = new TPad("bp2","bp2",0.33,y1,0.66,y2);
@@ -338,7 +386,6 @@ void plotXY_negPos(char* fname){
   y2 = y1; y1 = 1./13.*(--nrow)-space1;
   TPad *bp6 = new TPad("bp6","bp6",0.33,y1,0.66,y2);
   y2 = y1-space; y1 = 1./13.*(--nrow)-space1;
-  Double_t off = 0.12;
   off = 0.165;
   y1 -= space1; y2 -= space1;
   space1 *= 2;
@@ -390,8 +437,10 @@ void plotXY_negPos(char* fname){
     TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
     TString layer = "L"; layer+=i; layer+= "BS"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
+    TH1D *his;
+    // cout << i << " " << his2 << endl;
     if(his2){
-      TH1D *his = (TH1D*)his2->ProjectionY();     
+      TH1D *his = (TH1D*)his2->ProjectionY();
       if(layer.Contains("1")){his->SetFillColor(kRed);}
       else if(layer.Contains("2")){his->SetFillColor(kOrange);}
       else if(layer.Contains("3")){his->SetFillColor(kYellow);}
@@ -400,35 +449,40 @@ void plotXY_negPos(char* fname){
       else if(layer.Contains("6")){his->SetFillColor(kBlue);}
       if(layer.Contains("A")){his->SetFillStyle(3007);}
       else if(layer.Contains("S")){his->SetFillStyle(3004);}
-    }
+    }else{
+      his = 0;
+    }     
+    
     //    cBot->cd(++ic);
     ipad++;
     TString pd = "bp"; pd+=ipad;
     TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    //low = his->GetMean()-w*his->GetRMS();
-    //up = his->GetMean()+w*his->GetRMS();    
-    //    his->Fit("gaus","Q0","",low,up);
-    his2->SetMarkerColor(kMagenta);
-    his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
     his3->Draw(); 
+    his3->SetMarkerColor(kAzure+10);      
+    his3->SetStats(kFALSE); 
     if(his2) his2->Draw("same");
-    //    TF1 *fit = his->GetFunction("gaus");
-      
-    // cout << "sensor " << i << " stereo mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+    if(his){
+      //low = his->GetMean()-w*his->GetRMS();
+      //up = his->GetMean()+w*his->GetRMS();    
+      //    his->Fit("gaus","Q0","",low,up);
+      his2->SetMarkerColor(kMagenta);
+      his2->SetStats(kFALSE);
+      //    TF1 *fit = his->GetFunction("gaus");
+    }
+      // cout << "sensor " << i << " stereo mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
     // cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
     // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries()  << endl;
 
     hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_sensor0";
-    TString hisname3 = "h_xy_pos_module_L"; hisname3  += i;
+    hisname3 = "h_xy_pos_module_L"; hisname3  += i;
     hisname3 += "b_halfmodule_axial_sensor0";
-    TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
+    his3 = (TH2D*) f->Get(hisname3.Data());
     layer = "L"; layer+=i; layer+= "BA"; 
-    TH2D *his2 = (TH2D*) f->Get(hisname.Data());
+    his2 = (TH2D*) f->Get(hisname.Data());
     if(his2){
-      TH1D *his = (TH1D*)his2->ProjectionY();     
+      his = (TH1D*)his2->ProjectionY();
       if(layer.Contains("1")){his->SetFillColor(kRed);}
       else if(layer.Contains("2")){his->SetFillColor(kOrange);}
       else if(layer.Contains("3")){his->SetFillColor(kYellow);}
@@ -437,22 +491,26 @@ void plotXY_negPos(char* fname){
       else if(layer.Contains("6")){his->SetFillColor(kBlue);}
       if(layer.Contains("A")){his->SetFillStyle(3007);}
       else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    }else{
+      his = 0;
     }
+    
     //    cBot->cd(++ic);
     ipad++;
-    TString pd = "bp"; pd+=ipad;
-    TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
+    pd = "bp"; pd+=ipad;
+    pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    //low = his->GetMean()-w*his->GetRMS();
-    //up = his->GetMean()+w*his->GetRMS();    
-    //    his->Fit("gaus","Q0","",low,up);
-    his2->SetMarkerColor(kMagenta);
-    his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
-    his3->Draw();  
-    if(his2) his2->Draw("same");
-    //    TF1 *fit = his->GetFunction("gaus");
-
+    if(his){
+      //low = his->GetMean()-w*his->GetRMS();
+      //up = his->GetMean()+w*his->GetRMS();    
+      //    his->Fit("gaus","Q0","",low,up);
+      his2->SetMarkerColor(kMagenta);
+      his3->SetMarkerColor(kAzure+10);
+      his3->SetStats(kFALSE); his2->SetStats(kFALSE);
+      his3->Draw();  
+      if(his2) his2->Draw("same");
+      //    TF1 *fit = his->GetFunction("gaus");
+    }
     // cout << "sensor " << i << " stereo mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
     // cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
     // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries()  << endl;
@@ -463,31 +521,31 @@ void plotXY_negPos(char* fname){
     hisname += "b_halfmodule_stereo_hole_sensor0";
     TString hisname3 = "h_xy_pos_module_L"; hisname3  += i;
     hisname3 += "b_halfmodule_stereo_hole_sensor0";
+    TH2D *his3;
     if(f->Get(hisname3.Data())){
-      TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
+      his3 = (TH2D*) f->Get(hisname3.Data());
     }else{
-      TH2D *his3 = 0.;
+      his3 = 0;
     }
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
     // check: is there the histogram?
-    cout << f->Get(hisname.Data()) << endl;
-    if(f->Get(hisname.Data())){
-      TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-      if(his2){
-	TH1D *his = (TH1D*)his2->ProjectionY();     
-	if(layer.Contains("1")){his->SetFillColor(kRed);}
-	else if(layer.Contains("2")){his->SetFillColor(kOrange);}
-	else if(layer.Contains("3")){his->SetFillColor(kYellow);}
-	else if(layer.Contains("4")){his->SetFillColor(kGreen);}
-	else if(layer.Contains("5")){his->SetFillColor(kCyan);}
-	else if(layer.Contains("6")){his->SetFillColor(kBlue);}
-	if(layer.Contains("A")){his->SetFillStyle(3007);}
-	else if(layer.Contains("S")){his->SetFillStyle(3004);}
-      }
+    //    cout << f->Get(hisname.Data()) << endl;
+    TH2D *his2;
+    TH1D *his;
+    his2 = (TH2D*) f->Get(hisname.Data());
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();
+      if(layer.Contains("1")){his->SetFillColor(kRed);}
+      else if(layer.Contains("2")){his->SetFillColor(kOrange);}
+      else if(layer.Contains("3")){his->SetFillColor(kYellow);}
+      else if(layer.Contains("4")){his->SetFillColor(kGreen);}
+      else if(layer.Contains("5")){his->SetFillColor(kCyan);}
+      else if(layer.Contains("6")){his->SetFillColor(kBlue);}
+      if(layer.Contains("A")){his->SetFillStyle(3007);}
+      else if(layer.Contains("S")){his->SetFillStyle(3004);}
     }else{
-      TH2D *his2 = 0.;
-    }
-    cout << his2 << endl;
+      his = 0;
+    }     
 
     //    cBot->cd(++ic);
     ipad++; 
@@ -498,11 +556,12 @@ void plotXY_negPos(char* fname){
     //    up = his->GetMean()+w*his->GetRMS();    
     //    his->Fit("gaus","Q0","",low,up);
     his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
+    his3->SetStats(kFALSE); 
     if(his3) his3->Draw(); 
     if(his2){
+      his2->SetStats(kFALSE);
       his2->SetMarkerColor(kMagenta);
-      cout << hisname.Data() << endl;
+      //      cout << hisname.Data() << endl;
       his2->Draw("same");
     }
     //    TF1 *fit = his->GetFunction("gaus");
@@ -512,14 +571,14 @@ void plotXY_negPos(char* fname){
 
     hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_hole_sensor0";
-    TString hisname3 = "h_xy_pos_module_L"; hisname3  += i;
+    hisname3 = "h_xy_pos_module_L"; hisname3  += i;
     hisname3 += "b_halfmodule_axial_hole_sensor0";
-    TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
+    his3 = (TH2D*) f->Get(hisname3.Data());
     layer = "L"; layer+=i; layer+= "BAHo";
     if(f->Get(hisname.Data())){ 
-      TH2D *his2 = (TH2D*) f->Get(hisname.Data());
+      his2 = (TH2D*) f->Get(hisname.Data());
       if(his2){
-	TH1D *his = (TH1D*)his2->ProjectionY();     
+	his = (TH1D*)his2->ProjectionY();
 	if(layer.Contains("1")){his->SetFillColor(kRed);}
 	else if(layer.Contains("2")){his->SetFillColor(kOrange);}
 	else if(layer.Contains("3")){his->SetFillColor(kYellow);}
@@ -528,38 +587,40 @@ void plotXY_negPos(char* fname){
 	else if(layer.Contains("6")){his->SetFillColor(kBlue);}
 	if(layer.Contains("A")){his->SetFillStyle(3007);}
 	else if(layer.Contains("S")){his->SetFillStyle(3004);}
-	//    cBot->cd(++ic);
+      }else{
+	his = 0;
       }
-    }else{
-      TH2D *his2= 0.;
     }
     ipad++; ipad++;
-    TString pd = "bp"; pd+=ipad;
-    TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
+    pd = "bp"; pd+=ipad;
+    pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     //    low = his->GetMean()-w*his->GetRMS();
     //    up = his->GetMean()+w*his->GetRMS();    
     //    his->Fit("gaus","Q0","",low,up);
-    his2->SetMarkerColor(kMagenta);
     his3->SetMarkerColor(kAzure+10);
-    his3->SetStats(kFALSE); his2->SetStats(kFALSE);
+    his3->SetStats(kFALSE); 
     if(his3) his3->Draw();  
-    if(his2) his2->Draw("same");
+    if(his2){
+      his2->SetStats(kFALSE);
+      his2->Draw("same");
+      his2->SetMarkerColor(kMagenta);
+    }
     //    TF1 *fit = his->GetFunction("gaus");
 
     // cout << "sensor " << i << " stereo hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
     // cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
     // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries()  << endl;
 
-    TString hisname = "h_xy_neg_module_L"; hisname  += i;
+    hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_slot_sensor0";
-    TString hisname3 = "h_xy_pos_module_L"; hisname3  += i;
+    hisname3 = "h_xy_pos_module_L"; hisname3  += i;
     hisname3 += "b_halfmodule_stereo_slot_sensor0";
-    TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
+    his3 = (TH2D*) f->Get(hisname3.Data());
     layer = "L"; layer+=i; layer+= "BSSl"; 
-    TH2D *his2 = (TH2D*) f->Get(hisname.Data());
+    his2 = (TH2D*) f->Get(hisname.Data());
     if(his2){
-      TH1D *his = (TH1D*)his2->ProjectionY();     
+      TH1D *his = (TH1D*)his2->ProjectionY();
       if(layer.Contains("1")){his->SetFillColor(kRed);}
       else if(layer.Contains("2")){his->SetFillColor(kOrange);}
       else if(layer.Contains("3")){his->SetFillColor(kYellow);}
@@ -568,11 +629,13 @@ void plotXY_negPos(char* fname){
       else if(layer.Contains("6")){his->SetFillColor(kBlue);}
       if(layer.Contains("A")){his->SetFillStyle(3007);}
       else if(layer.Contains("S")){his->SetFillStyle(3004);}
-      //    cBot->cd(++ic);
+    }else{
+      his = 0;
     }
+  
     ipad--;
-    TString pd = "bp"; pd+=ipad;
-    TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
+    pd = "bp"; pd+=ipad;
+    pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     //    low = his->GetMean()-w*his->GetRMS();
     //    up = his->GetMean()+w*his->GetRMS();    
@@ -590,13 +653,13 @@ void plotXY_negPos(char* fname){
 
     hisname = "h_xy_neg_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_slot_sensor0";
-    TString hisname3 = "h_xy_pos_module_L"; hisname3  += i;
+    hisname3 = "h_xy_pos_module_L"; hisname3  += i;
     hisname3 += "b_halfmodule_axial_slot_sensor0";
-    TH2D *his3 = (TH2D*) f->Get(hisname3.Data());
+    his3 = (TH2D*) f->Get(hisname3.Data());
     layer = "L"; layer+=i; layer+= "BASl"; 
-    TH2D *his2 = (TH2D*) f->Get(hisname.Data());
+    his2 = (TH2D*) f->Get(hisname.Data());
     if(his2){
-      TH1D *his = (TH1D*)his2->ProjectionY();     
+      his = (TH1D*)his2->ProjectionY();
       if(layer.Contains("1")){his->SetFillColor(kRed);}
       else if(layer.Contains("2")){his->SetFillColor(kOrange);}
       else if(layer.Contains("3")){his->SetFillColor(kYellow);}
@@ -605,11 +668,13 @@ void plotXY_negPos(char* fname){
       else if(layer.Contains("6")){his->SetFillColor(kBlue);}
       if(layer.Contains("A")){his->SetFillStyle(3007);}
       else if(layer.Contains("S")){his->SetFillStyle(3004);}
-      //    cBot->cd(++ic);
+    }else{
+      his = 0;
     }
+
     ipad++; ipad++;
-    TString pd = "bp"; pd+=ipad;
-    TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
+    pd = "bp"; pd+=ipad;
+    pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     //    low = his->GetMean()-w*his->GetRMS();
     //    up = his->GetMean()+w*his->GetRMS();    
