@@ -100,17 +100,21 @@ void plotResidualsUVSPosV_new(char* fname){
     hisname += "t_halfmodule_axial_sensor0_top";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();
+    TH1D *his; his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();
     ipad++;
     TString pd = "tp"; pd+=ipad;
     TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up);
-    his2->Draw("colz");
-    TF1 *fit = his->GetFunction("gaus");
-
+    Double_t low, up;
+    if(his2) his2->Draw("colz");
+    TF1 *fit;
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up);
+      fit = his->GetFunction("gaus");
+    }
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_stereo_sensor0";
     hisname = "h_res_gbl_vs_vpred_module_L"; hisname +=i;
@@ -118,16 +122,19 @@ void plotResidualsUVSPosV_new(char* fname){
 
     layer = "L"; layer+=i; layer+= "TS"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();
+    his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();
     ipad++;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his2) his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
   }
   //  ic = 19;
   for(Int_t i=4; i<7; i++){
@@ -137,64 +144,78 @@ void plotResidualsUVSPosV_new(char* fname){
     //   hisname += "t_halfmodule_axial_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "TAHo"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();
+    TH1D *his; his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();
     ipad++;
     TString pd = "tp"; pd+=ipad;
     TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    TF1 *fit = his->GetFunction("gaus");
-
+    Double_t low, up;
+    TF1 *fit;
+    if(his2) his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
     hisname = "h_res_gbl_vs_vpred_module_L"; hisname +=i;
     hisname += "t_halfmodule_stereo_hole_sensor0_top";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_stereo_hole_sensor0";
     layer = "L"; layer+=i; layer+= "TSHo"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();
+    his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();
     ipad++; ipad++;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his2) his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
     hisname = "h_res_gbl_vs_vpred_module_L"; hisname +=i;
     hisname += "t_halfmodule_axial_slot_sensor0_top";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TASl";
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();     
+    his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();     
     ipad--;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his2) his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
     hisname = "h_res_gbl_vs_vpred_module_L"; hisname +=i;
     hisname += "t_halfmodule_stereo_slot_sensor0_top";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TSSl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();     
+    his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();     
     ipad++; ipad++;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his2) his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
   }
   cout << endl;
   cout << "------------------------" << endl;
@@ -267,32 +288,40 @@ void plotResidualsUVSPosV_new(char* fname){
     //    hisname += "b_halfmodule_stereo_sensor0";
     TString layer = "L"; layer+=i; layer+= "BS"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();     
+    TH1D *his; his =0;
+    if(his2) his = (TH1D*)his2->ProjectionY();     
     ipad++;
     TString pd = "bp"; pd+=ipad;
     TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    TF1 *fit = his->GetFunction("gaus");
-    
+    if(his2) his2->Draw("colz");
+    Double_t low, up;
+    TF1 *fit;
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
     hisname = "h_res_gbl_vs_vpred_module_L"; hisname +=i;
     hisname += "b_halfmodule_axial_sensor0_bot";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_axial_sensor0";
     layer = "L"; layer+=i; layer+= "BA"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();     
+    his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();     
     ipad++;
     pd = "bp"; pd+=ipad;
     pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his2) his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
   }
   for(Int_t i=4; i<7; i++){
     TString hisname = "h_res_gbl_vs_vpred_module_L"; hisname +=i;
@@ -301,64 +330,78 @@ void plotResidualsUVSPosV_new(char* fname){
     //    hisname += "b_halfmodule_stereo_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();     
+    TH1D *his; his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();     
     ipad++; 
     TString pd = "bp"; pd+=ipad;
     TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    TF1 *fit = his->GetFunction("gaus");
-
+    if(his2) his2->Draw("colz");
+    Double_t low, up;
+    TF1 *fit;
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
     hisname = "h_res_gbl_vs_vpred_module_L"; hisname +=i;
     hisname += "b_halfmodule_axial_hole_sensor0_bot";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_axial_hole_sensor0";
     layer = "L"; layer+=i; layer+= "BAHo"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();     
+    his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();     
     ipad++; ipad++;
     pd = "bp"; pd+=ipad;
     pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his2) his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
     hisname = "h_res_gbl_vs_vpred_module_L"; hisname +=i;
     hisname += "b_halfmodule_stereo_slot_sensor0_bot";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BSSl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();     
+    his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();     
     ipad--;
     pd = "bp"; pd+=ipad;
     pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his2) his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
     hisname = "h_res_gbl_vs_vpred_module_L"; hisname +=i;
     hisname += "b_halfmodule_axial_slot_sensor0_bot";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BASl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his = (TH1D*)his2->ProjectionY();     
+    his = 0;
+    if(his2) his = (TH1D*)his2->ProjectionY();     
     ipad++; ipad++;
     pd = "bp"; pd+=ipad;
     pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    fit = his->GetFunction("gaus");
-
+    if(his2) his2->Draw("colz");
+    if(his){
+      low = his->GetMean()-w*his->GetRMS();
+      up = his->GetMean()+w*his->GetRMS();    
+      his->Fit("gaus","Q0","",low,up); 
+      fit = his->GetFunction("gaus");
+    }
   }
 
   //  outf.close();
