@@ -12,7 +12,7 @@ macros for alignment
    3) plotResidualsVSPos_new.C(filename) - scatter plot of the U residual vs U coordinate
    4) plotResidualsVSPosProfile_new.C(filename) - profile plot of the U residual vs U coordinate distribution
    5) plotResidualsUVSPosV_new.C(filename) - scatter plot of the U residual vs V coordinate
-   6) plotResidualsUVSPosVProfile_new.C(filename) - profile plot of the U residual vs V coordinate distribution
+   6) plotResidualsVSPosVProfile_new.C(filename) - profile plot of the U residual vs V coordinate distribution
    7) plotXY.C(filename) - plots of V vs U coordinates of the hit in the sensor
    8) plotXY_neg.C(filename) - plots of V vs U coordinates of the hit in the sensor for positive tracks (attention: the sign is reversed)
    9) plotXY_pos.C(filename) - plots of V vs U coordinates of the hit in the sensor for negative tracks (attention: the sign is reversed)
