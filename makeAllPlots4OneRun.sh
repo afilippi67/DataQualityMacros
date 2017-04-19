@@ -3,13 +3,7 @@
 export FILE=$1
 export RUN=$2
 export TYPE=run_$RUN
-#root -b -l -q plotResidualsOrder.cxx\(\"$FILE\"\)
-#root -b -l -q plotResidualsOrderGBLWithErrors.cxx\(\"$FILE\"\)
-#root -b -l -q plotResidualsOrderScatter.cxx\(\"$FILE\"\)
-#root -b -l -q plotXY.cxx\(\"$FILE\"\)
-#root -b -l -q plotXY_neg.cxx\(\"$FILE\"\)
-#root -b -l -q plotXY_pos.cxx\(\"$FILE\"\)
-#root -b -l -q plotPredXY.cxx\(\"$FILE\"\)
+#
 root -b -l -q plotResidualsInitial.C\(\"$FILE\"\)
 root -b -l -q plotResidualsOrderGBLWithErrors.C\(\"$FILE\"\)
 root -b -l -q plotResidualsVSPos_new.C\(\"$FILE\"\)
