@@ -6,6 +6,7 @@
 #include <TStyle.h>
 #include <TFile.h>
 #include <TH2D.h>
+#include <TGaxis.h>
 
 
 void ReverseXAxis (TH1 *h)
