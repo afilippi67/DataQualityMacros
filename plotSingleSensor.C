@@ -8,7 +8,7 @@
 #include <TStyle.h>
 #include <TF1.h>
 
-void plotSingleSensor(Char_t *sensor, Char_t *file){
+void plotSingleSensor(const Char_t *sensor, const Char_t *file){
 
   gStyle->SetOptStat(0);
   TString filename = file;

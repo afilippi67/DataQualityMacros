@@ -7,7 +7,7 @@
 #include <TFile.h>
 #include <TH2D.h>
 
-void plotResidualsUVSPosV_new(char* fname){
+void plotResidualsUVSPosV_new(const char* fname){
 
   // usage: inpiut root filename out of GBL
   // plots the scatter plot of the u residual vs the u coordinate of the hit in 
