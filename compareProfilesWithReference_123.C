@@ -12,10 +12,11 @@
 #include <TProfile.h>
 #include "ReverseXAxis.C"
 #include <TLine.h>
+#include <TApplication.h>
 
 // mod 1 2 3
 
-void compareProfilesWithReference_123(Int_t mod, const Char_t *fname){
+void compareProfilesWithReference_123(const Char_t *type, Int_t mod, const Char_t *fname){
 
   gStyle->SetOptStat(0);
   gStyle->SetLineWidth(1);
@@ -24,8 +25,19 @@ void compareProfilesWithReference_123(Int_t mod, const Char_t *fname){
   zerol->SetLineColor(kRed);
   zerol->SetLineStyle(3);
 
-  TFile *f = new TFile("/disk2/hps_alignment/hps-gbl-output/mixedSamples/2015/HPS-EngRun2015-Nominal-v5-0/gbltst-hps-plots-hps_005772.evio.all.root");
-  
+  TString ttyp = type;
+  TFile *f;
+  Int_t end = 0;
+  if(ttyp.Contains("C")){
+    f = new TFile("/disk2/hps_alignment/hps-gbl-output/mixedSamples/2015/HPS-EngRun2015-Nominal-v5-0/gbltst-hps-plots-hps_005772.evio.all.root");
+    cout << "curved tracks selected" << endl;
+  }else if(ttyp.Contains("S")){
+    f = new TFile("/disk2/hps_alignment/hps-gbl-output/mixedSamples/2015/HPS-EngRun2015-Nominal-v5-0/gbltst-hps-plots-hps_noField.root");
+  }else{
+    cout << "choose either S or C for straight or curved type tracks" << endl;
+    cout << "straight tracks selected" << endl;
+    gApplication->Terminate();
+  }
 
   // bot
   TH2F *his1b;
@@ -88,11 +100,21 @@ void compareProfilesWithReference_123(Int_t mod, const Char_t *fname){
   hpf4botssldb->GetYaxis()->SetTitle("mm");
   hpf4botasldb->GetXaxis()->SetTitle("Meas u (mm)");
   hpf4botssldb->GetXaxis()->SetTitle("Meas u (mm)");
+  hpf4botaslb->GetXaxis()->SetTitle("Meas u (mm)");
+  hpf4botsslb->GetXaxis()->SetTitle("Meas u (mm)");
   hpf4botasldb->GetXaxis()->SetRangeUser(-20,5);
   hpf4botssldb->GetXaxis()->SetRangeUser(-20,5);
+  hpf4botaslb->GetXaxis()->SetRangeUser(-20,5);
+  hpf4botsslb->GetXaxis()->SetRangeUser(-20,5);
   Double_t lim = 0.01;
   hpf4botssldb->GetYaxis()->SetRangeUser(-lim,lim);
   hpf4botssldb->GetYaxis()->SetRangeUser(-lim,lim);
+  hpf4botsslb->GetYaxis()->SetRangeUser(-lim,lim);
+  hpf4botsslb->GetYaxis()->SetRangeUser(-lim,lim);
+  hpf4botasldb->GetYaxis()->SetRangeUser(-lim,lim);
+  hpf4botasldb->GetYaxis()->SetRangeUser(-lim,lim);
+  hpf4botaslb->GetYaxis()->SetRangeUser(-lim,lim);
+  hpf4botaslb->GetYaxis()->SetRangeUser(-lim,lim);
   hpf4botasldb->SetStats(kFALSE);
   hpf4botssldb->SetStats(kFALSE);
 
@@ -102,16 +124,22 @@ void compareProfilesWithReference_123(Int_t mod, const Char_t *fname){
   cb->Divide(2,2);
   Int_t i=2;
   cb->cd(++i);
-  hpf4botasldb->SetStats(kFALSE);
-  hpf4botasldb->Draw();
   hpf4botaslb->SetStats(kFALSE);
-  hpf4botaslb->Draw("same");
+  hpf4botasldb->SetStats(kFALSE);
+  if(mod == 1){
+    hpf4botaslb ->GetYaxis()->SetRangeUser(-0.01,0.01);
+    hpf4botasldb->GetYaxis()->SetRangeUser(-0.01,0.01);
+    hpf4botssldb->GetYaxis()->SetRangeUser(-0.01,0.01);
+    hpf4botsslb-> GetYaxis()->SetRangeUser(-0.01,0.01);
+  }
+  hpf4botaslb->Draw();
+  hpf4botasldb->Draw("same");
   zerol->Draw("same");
   cb->cd(++i);
   hpf4botssldb->SetStats(kFALSE);
   hpf4botsslb-> SetStats(kFALSE);
-  hpf4botssldb->Draw();
-  hpf4botsslb->Draw("same");
+  hpf4botsslb->Draw();
+  hpf4botssldb->Draw("same");
   zerol->Draw("same");
 
   TString titb = "profUResVsU_mod"; titb += mod; titb += ".gif";
