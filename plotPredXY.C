@@ -7,7 +7,7 @@
 #include <TH2D.h>
 #include <TFile.h>
 
-void plotPredXY(char* fname){
+void plotPredXY(const char* fname){
 
   // input: root filename out of GBL
   // output: y vs x in the sensor reference system, no axes flipped
@@ -100,7 +100,12 @@ void plotPredXY(char* fname){
     hisname += "t_halfmodule_axial_sensor0";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();
+    TH1D *his;
+    if(his2){
+      his = (TH1D*)his2->ProjectionY();
+    }else{
+      his = 0;
+    }
     ipad++;
     TString pd = "tp"; pd+=ipad;
     TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());

@@ -7,7 +7,7 @@
 #include <TFile.h>
 #include <TH2D.h>
 
-void plotXY_negPos(char* fname){
+void plotXY_negPos(const char* fname){
 
   gStyle->SetOptStat(0);
   Float_t w = 1.2; // number of RMS for gaussian fit

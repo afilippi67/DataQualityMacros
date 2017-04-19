@@ -11,7 +11,7 @@
 #include <TMultiGraph.h>
 #include <TLine.h>
 
-void plotKinkLambda(char* fname){
+void plotKinkLambda(const char* fname){
 
   // input: root filename out of GBL
 

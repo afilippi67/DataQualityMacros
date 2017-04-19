@@ -11,7 +11,7 @@
 #include <TMultiGraph.h>
 #include <TLine.h>
 
-void plotKinkPhi(char* fname){
+void plotKinkPhi(const char* fname){
 
   // input: root filename out of GBL
 

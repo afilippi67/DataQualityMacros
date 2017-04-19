@@ -7,7 +7,7 @@
 #include <TFile.h>
 #include <TH2D.h>
 
-void plotXY_pos(Char_t* fname){
+void plotXY_pos(const Char_t* fname){
 
   gStyle->SetOptStat(0);
   // input: rootfile out of GBL

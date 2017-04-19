@@ -12,7 +12,7 @@
 #include <TLine.h>
 #include <TPad.h>
 
-void plotResidualsInitial(char* fname){
+void plotResidualsInitial(const char* fname){
 
   // input: root filename out of GBL
 

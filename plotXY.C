@@ -8,7 +8,7 @@
 #include <TFile.h>
 #include <TH2D.h>
 
-void plotXY(char* fname){
+void plotXY(const char* fname){
 
   // input: root file from GBL
 

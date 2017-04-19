@@ -11,7 +11,7 @@
 #include "TText.h"
 #include "TLatex.h"
 
-void survey_d0z0p(Char_t* filename){
+void survey_d0z0p(const Char_t* filename){
   TString file=filename;
   TFile *f = new TFile(file.Data());
   gStyle->SetStatH(0.5);  gStyle->SetStatW(0.5);  

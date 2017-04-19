@@ -29,7 +29,7 @@ void ReverseXAxis (TH1 *h)
 }
 
 
-void plotResidualsVSPos_new(char* fname){
+void plotResidualsVSPos_new(const char* fname){
 
   // usage: inpiut root filename out of GBL
   // plots the scatter plot of the u residual vs the u coordinate of the hit in 

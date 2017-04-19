@@ -12,7 +12,7 @@
 #include <TLine.h>
 #include <TPad.h>
 
-void plotResidualsOrderGBLWithErrors(char* fname){
+void plotResidualsOrderGBLWithErrors(const char* fname){
 
   // input: root filename (out of gbl)
 
