@@ -10,7 +10,7 @@
 #include <TProfile.h>
 #include <TGaxis.h>
 
-void plotResidualsVSPosVProfile_new(char* fname){
+void plotResidualsVSPosVProfile_new(const char* fname){
 
   TH1 *ReverseXAxis(TH1*); 
   TLine *zerol = new TLine(-20, 0., 20, 0.);
