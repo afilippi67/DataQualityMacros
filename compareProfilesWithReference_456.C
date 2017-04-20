@@ -13,6 +13,7 @@
 #include "ReverseXAxis.C"
 #include <TLine.h>
 #include <TApplication.h>
+#include <TColor.h>
 
 // mod value: 4 5 6
 
@@ -23,14 +24,34 @@ void compareProfilesWithReference_456(const Char_t *type, Int_t mod, const Char_
   zerol->SetLineColor(kRed);
   zerol->SetLineStyle(3);
 
+  TString filename = fname;
   TString ttyp = type;
-  TFile *f;
+  Int_t colorRef=0, colorFile=0;
+  TFile *f = 0;
   Int_t end = 0;
+
+  if(mod<4){
+    cout << "mod = " << mod << " , wrong module number, use the other macro file" << endl;
+    gApplication->Terminate();
+  }
+
   if(ttyp.Contains("C")){
     f = new TFile("/disk2/hps_alignment/hps-gbl-output/mixedSamples/2015/HPS-EngRun2015-Nominal-v5-0/gbltst-hps-plots-hps_005772.evio.all.root");
+    colorRef = kBlack;
+    colorFile = kMagenta;
     cout << "curved tracks selected" << endl;
+    if((!filename.Contains("5772")) && (!filename.Contains("7800"))){
+      cout << "**** are you sure you are analysing a curved tracks file? check !!" << endl;
+      gApplication->Terminate();
+    }
   }else if(ttyp.Contains("S")){
     f = new TFile("/disk2/hps_alignment/hps-gbl-output/mixedSamples/2015/HPS-EngRun2015-Nominal-v5-0/gbltst-hps-plots-hps_noField.root");
+    colorRef = kGray+3;
+    colorFile = kMagenta-7;
+    if((!filename.Contains("8100")) && (!filename.Contains("straight")) && (!filename.Contains("NoField"))){
+      cout << "**** are you sure you are analysing a straight tracks file? check !!" << endl;
+      gApplication->Terminate();
+    }
   }else{
     cout << "choose either S or C for straight or curved type tracks" << endl;
     cout << "straight tracks selected" << endl;
@@ -63,14 +84,14 @@ void compareProfilesWithReference_456(const Char_t *type, Int_t mod, const Char_
   hrev = (TProfile*) his4b->ProfileX();
   TProfile *hpf4botshob = (TProfile*) ReverseXAxis(hrev);
   //  TProfile *hpf4botshob = (TProfile*) his4b->ProfileX();
-  hpf4botaslb->SetLineColor(kBlack);
-  hpf4botahob->SetLineColor(kBlack);
-  hpf4botsslb->SetLineColor(kBlack);
-  hpf4botshob->SetLineColor(kBlack);
-  hpf4botaslb->SetMarkerColor(kBlack);
-  hpf4botahob->SetMarkerColor(kBlack);
-  hpf4botsslb->SetMarkerColor(kBlack);
-  hpf4botshob->SetMarkerColor(kBlack);
+  hpf4botaslb->SetLineColor(colorRef);
+  hpf4botahob->SetLineColor(colorRef);
+  hpf4botsslb->SetLineColor(colorRef);
+  hpf4botshob->SetLineColor(colorRef);
+  hpf4botaslb->SetMarkerColor(colorRef);
+  hpf4botahob->SetMarkerColor(colorRef);
+  hpf4botsslb->SetMarkerColor(colorRef);
+  hpf4botshob->SetMarkerColor(colorRef);
   hpf4botaslb->SetMarkerStyle(22);
   hpf4botahob->SetMarkerStyle(22);
   hpf4botsslb->SetMarkerStyle(22);
@@ -82,7 +103,6 @@ void compareProfilesWithReference_456(const Char_t *type, Int_t mod, const Char_
 
   ////////////////////////////////////////////////
 
-  TString filename = fname;
   TFile *g = new TFile(filename.Data());
 
   TString ini2 = "h_res_gbl_vs_u_module_L"; ini2 += mod; ini2 += "b_halfmodule_axial_slot_sensor0_bot"; 
@@ -101,14 +121,14 @@ void compareProfilesWithReference_456(const Char_t *type, Int_t mod, const Char_
   hrev = (TProfile*) his4db->ProfileX();
   TProfile *hpf4botshodb = (TProfile*) ReverseXAxis(hrev);
   //  TProfile *hpf4botshodb = (TProfile*) his4db->ProfileX();
-  hpf4botasldb->SetLineColor(kMagenta);
-  hpf4botahodb->SetLineColor(kMagenta);
-  hpf4botssldb->SetLineColor(kMagenta);
-  hpf4botshodb->SetLineColor(kMagenta);
-  hpf4botasldb->SetMarkerColor(kMagenta);
-  hpf4botahodb->SetMarkerColor(kMagenta);
-  hpf4botssldb->SetMarkerColor(kMagenta);
-  hpf4botshodb->SetMarkerColor(kMagenta);
+  hpf4botasldb->SetLineColor(colorFile);
+  hpf4botahodb->SetLineColor(colorFile);
+  hpf4botssldb->SetLineColor(colorFile);
+  hpf4botshodb->SetLineColor(colorFile);
+  hpf4botasldb->SetMarkerColor(colorFile);
+  hpf4botahodb->SetMarkerColor(colorFile);
+  hpf4botssldb->SetMarkerColor(colorFile);
+  hpf4botshodb->SetMarkerColor(colorFile);
   hpf4botasldb->SetMarkerStyle(20);
   hpf4botahodb->SetMarkerStyle(20);
   hpf4botssldb->SetMarkerStyle(20);
@@ -184,14 +204,14 @@ void compareProfilesWithReference_456(const Char_t *type, Int_t mod, const Char_
   hrev = (TProfile*) his4->ProfileX();
   TProfile *hpf4topsho = (TProfile*) ReverseXAxis(hrev);
   //  TProfile *hpf4topsho = his4->ProfileX();
-  hpf4topasl->SetLineColor(kBlack);
-  hpf4topaho->SetLineColor(kBlack);
-  hpf4topssl->SetLineColor(kBlack);
-  hpf4topsho->SetLineColor(kBlack);
-  hpf4topasl->SetMarkerColor(kBlack);
-  hpf4topaho->SetMarkerColor(kBlack);
-  hpf4topssl->SetMarkerColor(kBlack);
-  hpf4topsho->SetMarkerColor(kBlack);
+  hpf4topasl->SetLineColor(colorRef);
+  hpf4topaho->SetLineColor(colorRef);
+  hpf4topssl->SetLineColor(colorRef);
+  hpf4topsho->SetLineColor(colorRef);
+  hpf4topasl->SetMarkerColor(colorRef);
+  hpf4topaho->SetMarkerColor(colorRef);
+  hpf4topssl->SetMarkerColor(colorRef);
+  hpf4topsho->SetMarkerColor(colorRef);
   hpf4topasl->SetMarkerStyle(22);
   hpf4topaho->SetMarkerStyle(22);
   hpf4topssl->SetMarkerStyle(22);
@@ -221,14 +241,14 @@ void compareProfilesWithReference_456(const Char_t *type, Int_t mod, const Char_
   hrev = (TProfile*) his4d->ProfileX();
   TProfile *hpf4topshod = (TProfile*) ReverseXAxis(hrev);
   //  TProfile *hpf4topshod = his4d->ProfileX();
-  hpf4topasld->SetLineColor(kMagenta);
-  hpf4topahod->SetLineColor(kMagenta);
-  hpf4topssld->SetLineColor(kMagenta);
-  hpf4topshod->SetLineColor(kMagenta);
-  hpf4topasld->SetMarkerColor(kMagenta);
-  hpf4topahod->SetMarkerColor(kMagenta);
-  hpf4topssld->SetMarkerColor(kMagenta);
-  hpf4topshod->SetMarkerColor(kMagenta);
+  hpf4topasld->SetLineColor(colorFile);
+  hpf4topahod->SetLineColor(colorFile);
+  hpf4topssld->SetLineColor(colorFile);
+  hpf4topshod->SetLineColor(colorFile);
+  hpf4topasld->SetMarkerColor(colorFile);
+  hpf4topahod->SetMarkerColor(colorFile);
+  hpf4topssld->SetMarkerColor(colorFile);
+  hpf4topshod->SetMarkerColor(colorFile);
   hpf4topasld->SetMarkerStyle(20);
   hpf4topahod->SetMarkerStyle(20);
   hpf4topssld->SetMarkerStyle(20);
