@@ -140,6 +140,12 @@ void survey_d0z0p(const Char_t* filename){
   st->SetOptFit(1111); st->SetY1NDC(0.53); st->SetX1NDC(0.53); 
   his5->Draw();
   mean_top = fit->GetParameter(1);
+
+  his6->GetXaxis()->SetRangeUser(his6->GetXaxis()->GetBinCenter(limit/2.), his6->GetXaxis()->GetBinCenter(limit)); 
+  maxPeak = his6->GetMaximumBin();
+  low = his6->GetXaxis()->GetBinCenter(maxPeak) - wid;
+  up = his6->GetXaxis()->GetBinCenter(maxPeak) + wid;
+  his6->GetXaxis()->UnZoom();
   c->cd(pad++); his6->Fit("gaus","","",low,up); fit = his6->GetFunction("gaus"); fit->SetLineColor(kRed);
   st = (TPaveStats*)his6->FindObject("stats");
   st->SetOptFit(1111); st->SetY1NDC(0.53); st->SetX1NDC(0.53); 
@@ -230,6 +236,7 @@ void survey_d0z0p(const Char_t* filename){
 			    0.4*1.2*his1c->GetMaximum(), num.Data());
   lab1->SetTextColor(kViolet);
   lab1->Draw("same");
+  
 
   TH1F *his3c = (TH1F*) his3->Clone();
   TPaveStats *stc3 = (TPaveStats*)his3c->FindObject("stats");
@@ -323,13 +330,20 @@ void survey_d0z0p(const Char_t* filename){
     his5cc->Draw(); his5c->Draw("same");
     his6c->Draw("same");
   }
-  num = "p_{el} = "; 
+  num = "#Deltap_{el} = "; 
   n = TString::Format("%1.3f", meanP);
   num += n; num += " GeV/c";
-  TLatex *lab3 = new TLatex(
-			    0.6*(his5c->GetXaxis()->GetXmax()-his5c->GetXaxis()->GetXmin())+his5c->GetXaxis()->GetXmin(), 
-			    0.4*1.2*his5c->GetMaximum(), num.Data());
+  Double_t x1 = 0.2*(his5c->GetXaxis()->GetXmax()-his5c->GetXaxis()->GetXmin())+his5c->GetXaxis()->GetXmin();
+  Double_t y1 = 0.1*1.2*his5c->GetMaximum();
+  TLatex *lab3 = new TLatex(x1, y1, num.Data());
   lab3->SetTextColor(kViolet);
+
+  cout << x1 << " " << y1 << endl;
+  TBox *box = new TBox(x1-0.08, 
+		       y1-0.6*his1c->GetMaximum()/30.,
+		       x1+1.1, 
+		       y1+his1c->GetMaximum()/30.);
+  box->Draw("same");
   lab3->Draw("same");
 
 
