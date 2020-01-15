@@ -28,6 +28,10 @@ root -b -l -q survey_d0z0.C\(\"$FILE\"\)
 mkdir $TYPE
 mv -fv *__* $TYPE/.
 mv -fv *$RUN\*.* $TYPE/.
+mv -fv *scatter*.gif $TYPE/.
+mv -fv *profile*.gif $TYPE/.
+mv -fv *mean*.gif $TYPE/.
+mv -fv residuals*.gif $TYPE/.
 mv -fv *Kink*.txt $TYPE
 mv -vf *sensor_*.gif $TYPE/.
 mv -fv *_tb.gif  $TYPE/. $TYPE/.
