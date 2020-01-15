@@ -8,19 +8,19 @@
 #include <TFile.h>
 #include <TH2D.h>
 #include <TProfile.h>
+#include <TGaxis.h>
 
-void plotResidualsVSPosProfile_new(char* fname){
+void plotResidualsVSPosProfile_new(const char* fname){
 
+  TH1 *ReverseXAxis(TH1*); 
+  TLine *zerol = new TLine(-20, 0., 20, 0.);
+  zerol->SetLineColor(kRed);
+  zerol->SetLineStyle(3);
   // usage: inpiut root filename out of GBL
   // plots the scatter plot of the u residual vs the u coordinate of the hit in 
   // the sensor RF
 
   gStyle->SetOptStat(0);
-  TH1 *ReverseXAxis(TH1*);
-  TLine *zerol = new TLine(-20, 0., 20, 0.);
-  zerol->SetLineColor(kRed);
-  zerol->SetLineStyle(3);
-
   Double_t w = 1.2; // number of RMS for gaussian fit
   TString filename = fname;
   TCanvas *cTop = new TCanvas("cTop","Residuals in lab frame, TOP", 800, 1000);
@@ -103,8 +103,8 @@ void plotResidualsVSPosProfile_new(char* fname){
   for(Int_t i=1; i<4; i++){
     //    TString hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_axial_sensor0";
-    TString hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "t_halfmodule_axial_sensor0";
+    TString hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "t_halfmodule_axial_sensor0_top";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
     TH1D *his = (TH1D*)his2->ProjectionY();
@@ -116,18 +116,19 @@ void plotResidualsVSPosProfile_new(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up);
-    hpf->Draw(); zerol->Draw("same");
+    hpf->Draw();
+    zerol->Draw("same");
     
     TF1 *fit = his->GetFunction("gaus");
 
-    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "t_halfmodule_stereo_sensor0";
+    hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "t_halfmodule_stereo_sensor0_top";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_stereo_sensor0";
     layer = "L"; layer+=i; layer+= "TS"; 
     his2 = (TH2D*) f->Get(hisname.Data());
     his = (TH1D*)his2->ProjectionY();
-    hpf = his2->ProfileX();
+    hpf = his2->ProfileX(); zerol->Draw("same");
     ipad++;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
@@ -135,14 +136,14 @@ void plotResidualsVSPosProfile_new(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); 
-    TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
+    TH1 *hpfrev = (TH1*)ReverseXAxis((TH1*)hpf); hpfrev->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
   }
   //  ic = 19;
   for(Int_t i=4; i<7; i++){
-    TString hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "t_halfmodule_axial_hole_sensor0";
+    TString hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "t_halfmodule_axial_hole_sensor0_top";
     //    TString hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_axial_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "TAHo"; 
@@ -155,11 +156,11 @@ void plotResidualsVSPosProfile_new(char* fname){
     pad->cd();
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); hpf->Draw(); zerol->Draw("same");
+    his->Fit("gaus","Q0","",low,up); hpf->Draw();     zerol->Draw("same");
     TF1 *fit = his->GetFunction("gaus");
 
-    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "t_halfmodule_stereo_hole_sensor0";
+    hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "t_halfmodule_stereo_hole_sensor0_top";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_stereo_hole_sensor0";
     layer = "L"; layer+=i; layer+= "TSHo"; 
@@ -173,11 +174,11 @@ void plotResidualsVSPosProfile_new(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up);     
-    TH1* hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
+    TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw();     zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
-    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "t_halfmodule_axial_slot_sensor0";
+    hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "t_halfmodule_axial_slot_sensor0_top";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TASl";
@@ -190,11 +191,11 @@ void plotResidualsVSPosProfile_new(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); hpf->Draw(); zerol->Draw("same");
+    his->Fit("gaus","Q0","",low,up); hpf->Draw();  zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
-    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "t_halfmodule_stereo_slot_sensor0";
+    hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "t_halfmodule_stereo_slot_sensor0_top";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TSSl"; 
@@ -208,7 +209,8 @@ void plotResidualsVSPosProfile_new(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); 
-    hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
+    hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw();  zerol->Draw("same");
+
     fit = his->GetFunction("gaus");
 
   }
@@ -277,8 +279,8 @@ void plotResidualsVSPosProfile_new(char* fname){
   ic=0;
   ipad = 0;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "b_halfmodule_stereo_sensor0";
+    TString hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "b_halfmodule_stereo_sensor0_bot";
     //    TString hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_stereo_sensor0";
     TString layer = "L"; layer+=i; layer+= "BS"; 
@@ -293,10 +295,11 @@ void plotResidualsVSPosProfile_new(char* fname){
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); 
     TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
+
     TF1 *fit = his->GetFunction("gaus");
     
-    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "b_halfmodule_axial_sensor0";
+    hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "b_halfmodule_axial_sensor0_bot";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //   hisname += "b_halfmodule_axial_sensor0";
     layer = "L"; layer+=i; layer+= "BA"; 
@@ -309,13 +312,13 @@ void plotResidualsVSPosProfile_new(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); hpf->Draw(); zerol->Draw("same");
+    his->Fit("gaus","Q0","",low,up); hpf->Draw();zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
   }
   for(Int_t i=4; i<7; i++){
-    TString hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "b_halfmodule_stereo_hole_sensor0";
+    TString hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "b_halfmodule_stereo_hole_sensor0_bot";
     //    TString hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_stereo_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
@@ -329,11 +332,11 @@ void plotResidualsVSPosProfile_new(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); 
-    TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
+    TH1* hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
     TF1 *fit = his->GetFunction("gaus");
 
-    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "b_halfmodule_axial_hole_sensor0";
+    hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "b_halfmodule_axial_hole_sensor0_bot";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_axial_hole_sensor0";
     layer = "L"; layer+=i; layer+= "BAHo"; 
@@ -349,8 +352,8 @@ void plotResidualsVSPosProfile_new(char* fname){
     his->Fit("gaus","Q0","",low,up); hpf->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
-    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "b_halfmodule_stereo_slot_sensor0";
+    hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "b_halfmodule_stereo_slot_sensor0_bot";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BSSl"; 
@@ -367,8 +370,8 @@ void plotResidualsVSPosProfile_new(char* fname){
     hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
-    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
-    hisname += "b_halfmodule_axial_slot_sensor0";
+    hisname = "h_res_gbl_vs_u_module_L"; hisname  += i;
+    hisname += "b_halfmodule_axial_slot_sensor0_bot";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BASl"; 
