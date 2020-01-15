@@ -116,9 +116,9 @@ void plotResidualsVSPos_new(char* fname){
   Int_t ipad=0;
   for(Int_t i=1; i<4; i++){
     //    TString hisname = "h_resVsPos_module_L"; hisname  += i;
-    TString hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
+    TString hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
     //    hisname += "t_halfmodule_axial_sensor0";
-    hisname += "t_halfmodule_axial_sensor0_top";
+    hisname += "t_halfmodule_axial_sensor0";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
     TH1D *his = (TH1D*)his2->ProjectionY();
@@ -135,8 +135,8 @@ void plotResidualsVSPos_new(char* fname){
 
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_stereo_sensor0";
-    hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "t_halfmodule_stereo_sensor0_top";
+    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "t_halfmodule_stereo_sensor0";
 
     layer = "L"; layer+=i; layer+= "TS"; 
     his2 = (TH2D*) f->Get(hisname.Data());
@@ -153,8 +153,8 @@ void plotResidualsVSPos_new(char* fname){
   }
   //  ic = 19;
   for(Int_t i=4; i<7; i++){
-    TString hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "t_halfmodule_axial_hole_sensor0_top";
+    TString hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "t_halfmodule_axial_hole_sensor0";
     //    TString hisname = "h_resVsPos_module_L"; hisname  += i;
     //   hisname += "t_halfmodule_axial_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "TAHo"; 
@@ -169,8 +169,8 @@ void plotResidualsVSPos_new(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     TF1 *fit = his->GetFunction("gaus");
 
-    hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "t_halfmodule_stereo_hole_sensor0_top";
+    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "t_halfmodule_stereo_hole_sensor0";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_stereo_hole_sensor0";
     layer = "L"; layer+=i; layer+= "TSHo"; 
@@ -185,8 +185,8 @@ void plotResidualsVSPos_new(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     fit = his->GetFunction("gaus");
 
-    hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "t_halfmodule_axial_slot_sensor0_top";
+    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "t_halfmodule_axial_slot_sensor0";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TASl";
@@ -201,8 +201,8 @@ void plotResidualsVSPos_new(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     fit = his->GetFunction("gaus");
 
-    hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "t_halfmodule_stereo_slot_sensor0_top";
+    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "t_halfmodule_stereo_slot_sensor0";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "t_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TSSl"; 
@@ -283,8 +283,8 @@ void plotResidualsVSPos_new(char* fname){
   ic=0;
   ipad = 0;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "b_halfmodule_stereo_sensor0_bot";
+    TString hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "b_halfmodule_stereo_sensor0";
     //    TString hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_stereo_sensor0";
     TString layer = "L"; layer+=i; layer+= "BS"; 
@@ -299,8 +299,8 @@ void plotResidualsVSPos_new(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     TF1 *fit = his->GetFunction("gaus");
     
-    hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "b_halfmodule_axial_sensor0_bot";
+    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "b_halfmodule_axial_sensor0";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_axial_sensor0";
     layer = "L"; layer+=i; layer+= "BA"; 
@@ -317,8 +317,8 @@ void plotResidualsVSPos_new(char* fname){
 
   }
   for(Int_t i=4; i<7; i++){
-    TString hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "b_halfmodule_stereo_hole_sensor0_bot";
+    TString hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "b_halfmodule_stereo_hole_sensor0";
     //    TString hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_stereo_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
@@ -333,8 +333,8 @@ void plotResidualsVSPos_new(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     TF1 *fit = his->GetFunction("gaus");
 
-    hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "b_halfmodule_axial_hole_sensor0_bot";
+    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "b_halfmodule_axial_hole_sensor0";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_axial_hole_sensor0";
     layer = "L"; layer+=i; layer+= "BAHo"; 
@@ -349,8 +349,8 @@ void plotResidualsVSPos_new(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     fit = his->GetFunction("gaus");
 
-    hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "b_halfmodule_stereo_slot_sensor0_bot";
+    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "b_halfmodule_stereo_slot_sensor0";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BSSl"; 
@@ -365,8 +365,8 @@ void plotResidualsVSPos_new(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     fit = his->GetFunction("gaus");
 
-    hisname = "h_res_gbl_vs_u_module_L"; hisname +=i;
-    hisname += "b_halfmodule_axial_slot_sensor0_bot";
+    hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname +=i;
+    hisname += "b_halfmodule_axial_slot_sensor0";
     //    hisname = "h_resVsPos_module_L"; hisname  += i;
     //    hisname += "b_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BASl"; 
