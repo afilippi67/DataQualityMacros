@@ -4,8 +4,8 @@
 #include <Riostream.h>
 #include <TCanvas.h>
 #include <TStyle.h>
-#include <TFile.h>
 #include <TGraphErrors.h>
+#include <TFile.h>
 #include <TLatex.h>
 #include <TLegend.h>
 #include <TMultiGraph.h>
@@ -14,9 +14,10 @@
 
 void plotResidualsInitial(char* fname){
 
-  // input: root filename out of GBL
+  // input: root filename (out of ini)
 
-  Double_t w = 0.5; // number of RMS for gaussian fit
+  gStyle->SetOptStat(0);
+  Double_t w = 1.2; // number of RMS for gaussian fit
   TString filename = fname;
   cout << filename.Data() << endl;
   TGraphErrors *mean1Top = new TGraphErrors();
@@ -29,12 +30,11 @@ void plotResidualsInitial(char* fname){
   TGraphErrors *meanBot = new TGraphErrors();
   Double_t x[18] = {0.9,1.1, 1.9,2.1, 2.9,3.1, 
                     3.9,4.1, 4.9,5.1, 5.9,6.1,
-		    3.95,4.15, 4.95,5.15, 5.95,6.15};
-
-  TCanvas *cTop = new TCanvas("cTop","Residuals in lab frame, TOP", 800, 1000);
-  TCanvas *cBot = new TCanvas("cBot","Residuals in lab frame, BOTTOM",800, 1000);
-  cTop->SetFillColor(kBlue-10); cTop->SetFillStyle(3001);
-  cBot->SetFillColor(kMagenta-10); cBot->SetFillStyle(3001);
+		    3.95,4.15, 4.95,5.15, 5.95,6.15}; 
+  TCanvas *cTop = new TCanvas("cTop","Residuals in lab frame before GBL, TOP", 800, 1000);
+  TCanvas *cBot = new TCanvas("cBot","Residuals in lab frame before GBL, BOTTOM",800, 1000);
+  cTop->SetFillColor(kBlue-10); cTop->SetFillStyle(3002);
+  cBot->SetFillColor(kMagenta-10); cBot->SetFillStyle(3002);
   Int_t ic=0;
   Int_t np=1, npp=1;
   TFile *f = new TFile(filename.Data());
@@ -85,7 +85,6 @@ void plotResidualsInitial(char* fname){
   y2 = y1-space; y1 = 1./13.*(--nrow)-space1;
   TPad *tp17 = new TPad("tp17","tp17",0.+off,y1,0.33+off,y2);
   TPad *tp18 = new TPad("tp18","tp18",0.66-off,y1,1.-off,y2);
-
   TLatex* hole  = new TLatex(0.05,0.48,"hole");
   TLatex* slot  = new TLatex(0.85,0.48,"slot");
   hole->SetTextColor(kCyan);
@@ -116,11 +115,15 @@ void plotResidualsInitial(char* fname){
   ic = 2;
   Int_t ipad=0;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "h_res_module_L"; hisname  += i;
+    TString hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_sensor0";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
-
+    TString hisnameIni = "residual_before_GBL_module_L"; hisnameIni  += i;
+    hisnameIni += "t_halfmodule_axial_sensor0";
+    TH1D *hisIni = (TH1D*) f->Get(hisnameIni.Data());
+    Double_t lo = hisIni->GetXaxis()->GetXmin();
+    Double_t hi = hisIni->GetXaxis()->GetXmax();
     if(layer.Contains("1")){his->SetFillColor(kRed);}
     else if(layer.Contains("2")){his->SetFillColor(kOrange);}
     else if(layer.Contains("3")){his->SetFillColor(kYellow);}
@@ -129,119 +132,144 @@ void plotResidualsInitial(char* fname){
     else if(layer.Contains("6")){his->SetFillColor(kBlue);}
     if(layer.Contains("A")){his->SetFillStyle(3007);}
     else if(layer.Contains("S")){his->SetFillStyle(3004);}
-    ipad++;
-    TString pd = "tp"; pd+=ipad;
-    TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
-    pad->cd();
-    Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();   
-    cout <<  his->GetMean() << " " <<  his->GetRMS() << " " << low << " " << up << endl;
-    //    his->Fit("gaus","Q0","",low,up);
-    his->Fit("gaus","Q0");
-    TF1 *fit = his->GetFunction("gaus");
-    his->Draw();
-    //    his->Fit("gaus","Q","",low,up);
-    //    TF1 *fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " axial mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries() << endl;
-    */
-
-    
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
-    mean1Top->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-    
-    hisname = "h_res_module_L"; hisname  += i;
-    hisname += "t_halfmodule_stereo_sensor0";
-    layer = "L"; layer+=i; layer+= "TS"; 
-    his = (TH1D*) f->Get(hisname.Data());
-    if(layer.Contains("1")){his->SetFillColor(kRed);}
-    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
-    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
-    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
-    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
-    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
-    if(layer.Contains("A")){his->SetFillStyle(3007);}
-    else if(layer.Contains("S")){his->SetFillStyle(3004);}
-    ipad++;
-    pd = "tp"; pd+=ipad;
-    pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
-    pad->cd();
-    low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();
-
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    fit = his->GetFunction("gaus");
-
-    cout << "sensor " << i << " stereo mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
-    mean1Top->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-  }
-  Int_t np1=1, np2=1;
-  //  ic = 19;
-  for(Int_t i=4; i<7; i++){
-    TString hisname = "h_res_module_L"; hisname  += i;
-    hisname += "t_halfmodule_axial_hole_sensor0";
-    TString layer = "L"; layer+=i; layer+= "TAHo"; 
-    TH1D *his = (TH1D*) f->Get(hisname.Data());
-    if(layer.Contains("1")){his->SetFillColor(kRed);}
-    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
-    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
-    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
-    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
-    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
-    if(layer.Contains("A")){his->SetFillStyle(3007);}
-    else if(layer.Contains("S")){his->SetFillStyle(3004);}
-    //    cTop->cd(ic); ic+=3;
+    //    cTop->cd(ic); ic += 3;
     ipad++;
     TString pd = "tp"; pd+=ipad;
     TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
+    Bool_t isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      
+      cout << "sensor " << i << " axial mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
+      mean1Top->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean1Top->SetPoint(np, x[npp-1], -9999.);
+      mean1Top->SetPointError(np, 0., 0.); np++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.);
+      meanTop->SetPointError(npp, 0., 0.); npp++;
+    }
 
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    TF1 *fit = his->GetFunction("gaus");
+    hisname = "residual_before_GBL_module_L"; hisname  += i;
+    hisname += "t_halfmodule_stereo_sensor0";
+    layer = "L"; layer+=i; layer+= "TS"; 
+    his = (TH1D*) f->Get(hisname.Data());
+    hisnameIni = "residual_before_GBL_module_L"; hisnameIni  += i;
+    hisnameIni += "t_halfmodule_stereo_sensor0";
+    hisIni = (TH1D*) f->Get(hisnameIni.Data());
+    lo = hisIni->GetXaxis()->GetXmin();
+    hi = hisIni->GetXaxis()->GetXmax();
+//    his->GetXaxis()->SetRangeUser(lo,hi);
+    cout << " histogram " << hisname.Data() << endl;
+    if(layer.Contains("1")){his->SetFillColor(kRed);}
+    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
+    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
+    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
+    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
+    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
+    if(layer.Contains("A")){his->SetFillStyle(3007);}
+    else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    //    cTop->cd(ic); ic += 3;
+    ipad++;
+    pd = "tp"; pd+=ipad;
+    pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
+    pad->cd();
+    low = his->GetMean()-w*his->GetRMS();
+    up = his->GetMean()+w*his->GetRMS();    
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
 
-    cout << "sensor " << i << " axial hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    cout << np1 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
-    mean2Top->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.0); 
-    mean2Top->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+      cout << "sensor " << i << " stereo mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
+      mean1Top->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean1Top->SetPoint(np, x[npp-1], -9999.);
+      mean1Top->SetPointError(np, 0., 0.); np++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.);
+      meanTop->SetPointError(npp, 0., 0.); npp++;
+    }
+  }
+  Int_t np1=1, np2=1;
+  for(Int_t i=4; i<7; i++){
+    TString hisname = "residual_before_GBL_module_L"; hisname  += i;
+    hisname += "t_halfmodule_axial_hole_sensor0";
+    TString layer = "L"; layer+=i; layer+= "TAHo"; 
+    TH1D *his = (TH1D*) f->Get(hisname.Data());
+    TString hisnameIni = "residual_before_GBL_module_L"; hisnameIni  += i;
+    hisnameIni += "t_halfmodule_axial_hole_sensor0";
+    TH1D *hisIni = (TH1D*) f->Get(hisnameIni.Data());
+    Double_t lo = hisIni->GetXaxis()->GetXmin();
+    Double_t hi = hisIni->GetXaxis()->GetXmax();
+//    his->GetXaxis()->SetRangeUser(lo,hi);
+    if(layer.Contains("1")){his->SetFillColor(kRed);}
+    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
+    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
+    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
+    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
+    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
+    if(layer.Contains("A")){his->SetFillStyle(3007);}
+    else if(layer.Contains("S")){his->SetFillStyle(3004);}
+    ipad++;
+    TString pd = "tp"; pd+=ipad;
+    TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
+    pad->cd();
+    Double_t low = his->GetMean()-w*his->GetRMS();
+    Double_t up = his->GetMean()+w*his->GetRMS();    
+    Bool_t isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      
+      cout << "sensor " << i << " axial hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " axial hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      cout << np1 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
+      mean2Top->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.0); 
+      mean2Top->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean2Top->SetPoint(np1, x[npp-1], -9999.); 
+      mean2Top->SetPointError(np1, 0., 0.); np1++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.);
+      meanTop->SetPointError(npp, 0., 0.); npp++;
+    }
 
-    TString hisname = "h_res_module_L"; hisname  += i;
+    hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_hole_sensor0";
     layer = "L"; layer+=i; layer+= "TSHo"; 
     his = (TH1D*) f->Get(hisname.Data());
+    hisnameIni = "residual_before_GBL_module_L"; hisnameIni  += i;
+    hisnameIni += "t_halfmodule_stereo_hole_sensor0";
+    hisIni = (TH1D*) f->Get(hisnameIni.Data());
+    lo = hisIni->GetXaxis()->GetXmin();
+    hi = hisIni->GetXaxis()->GetXmax();
     if(layer.Contains("1")){his->SetFillColor(kRed);}
     else if(layer.Contains("2")){his->SetFillColor(kOrange);}
     else if(layer.Contains("3")){his->SetFillColor(kYellow);}
@@ -257,34 +285,39 @@ void plotResidualsInitial(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1* fit = his->GetFunction("gaus");
+      
+      cout << "sensor " << i << " stereo hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      cout << np1 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
+      mean2Top->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
+      mean2Top->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean2Top->SetPoint(np1, x[npp-1], -9999.);
+      mean2Top->SetPointError(np1, 0., 0.); np1++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.);
+      meanTop->SetPointError(npp, 0., 0.); npp++;
+    }
 
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    fit = his->GetFunction("gaus");
-
-    cout << "sensor " << i << " stereo hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    cout << np1 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
-    mean2Top->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
-    mean2Top->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-    hisname = "h_res_module_L"; hisname  += i;
+    hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TASl";     
     his = (TH1D*) f->Get(hisname.Data());
-    //    TString hisnameIni = "h_res_module_L"; hisnameIni  += i;
-    //    hisnameIni += "t_halfmodule_axial_sensor0";
-    //    TH1D *hisIni = (TH1D*) f->Get(hisnameIni.Data());
-    //    Double_t lo = hisIni->GetXaxis()->GetXmin();
-    //    Double_t hi = hisIni->GetXaxis()->GetXmax();
+    hisnameIni = "residual_before_GBL_module_L"; hisnameIni  += i;
+    hisnameIni += "t_halfmodule_axial_slot_sensor0";
+    hisIni = (TH1D*) f->Get(hisnameIni.Data());
+    lo = hisIni->GetXaxis()->GetXmin();
+    hi = hisIni->GetXaxis()->GetXmax();
 
     if(layer.Contains("1")){his->SetFillColor(kRed);}
     else if(layer.Contains("2")){his->SetFillColor(kOrange);}
@@ -294,36 +327,49 @@ void plotResidualsInitial(char* fname){
     else if(layer.Contains("6")){his->SetFillColor(kBlue);}
     if(layer.Contains("A")){his->SetFillStyle(3007);}
     else if(layer.Contains("S")){his->SetFillStyle(3004);}
-    //    cTop->cd(ic); ic+=3;
     ipad--;
     pd = "tp"; pd+=ipad;
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    fit = his->GetFunction("gaus");
+    up = his->GetMean()+w*his->GetRMS();    
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      
+      cout << "sensor " << i << " axial slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " axial slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;    
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      npp += 4;
+      cout << np2 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
+      mean3Top->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
+      mean3Top->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      npp += 4;
+      mean3Top->SetPoint(np2, x[npp-1], -9999.);
+      mean3Top->SetPointError(np2, 0., 0.); np2++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.); 
+      meanTop->SetPointError(npp, 0., 0.); npp++;
+    }
 
-    cout << "sensor " << i << " axial slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;    
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    npp += 4;
-    cout << np2 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
-    mean3Top->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
-    mean3Top->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
 
-    hisname = "h_res_module_L"; hisname  += i;
+    hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TSSl"; 
     his = (TH1D*) f->Get(hisname.Data());
+    hisnameIni = "residual_before_GBL_module_L"; hisnameIni  += i;
+    hisnameIni += "t_halfmodule_stereo_slot_sensor0";
+    hisIni = (TH1D*) f->Get(hisnameIni.Data());
+    lo = hisIni->GetXaxis()->GetXmin();
+    hi = hisIni->GetXaxis()->GetXmax();
+
     if(layer.Contains("1")){his->SetFillColor(kRed);}
     else if(layer.Contains("2")){his->SetFillColor(kOrange);}
     else if(layer.Contains("3")){his->SetFillColor(kYellow);}
@@ -338,26 +384,30 @@ void plotResidualsInitial(char* fname){
     pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    fit = his->GetFunction("gaus");
+    up = his->GetMean()+w*his->GetRMS();    
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1* fit = his->GetFunction("gaus");
 
-    cout << "sensor " << i << " stereo slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    cout << np2 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
-    
-    mean3Top->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.); 
-    mean3Top->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp -= 5;
-
+      cout << "sensor " << i << " stereo slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " stereo slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      cout << np2 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
+      mean3Top->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.); 
+      mean3Top->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp -= 5;
+    }else{
+      mean3Top->SetPoint(np2, x[npp-1], -9999.); 
+      mean3Top->SetPointError(np2, 0., 0.); np2++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.);
+      meanTop->SetPointError(npp, 0., 0.); npp -= 5;
+    }
   }
   cout << endl;
   cout << "------------------------" << endl;
@@ -400,13 +450,14 @@ void plotResidualsInitial(char* fname){
   y2 = y1-space; y1 = 1./13.*(--nrow)-space1;
   TPad *bp17 = new TPad("bp17","bp17",0.+off,y1,0.33+off,y2);
   TPad *bp18 = new TPad("bp18","bp18",0.66-off,y1,1.-off,y2);
-
-  cBot->cd();
+  //  TLatex* hole  = new TLatex(0.5,0.5,"hole");
+  //  TLatex* slot  = new TLatex(0.95,0.5,"slot");
   hole->SetTextColor(kCyan);
   slot->SetTextColor(kMagenta);
+
+  cBot->cd();
   hole->Draw();
   slot->Draw();
-
   bp1->Draw();
   bp2->Draw();
   bp3->Draw();
@@ -430,7 +481,7 @@ void plotResidualsInitial(char* fname){
   ipad = 0;
   np = np1 = np2 = npp = 1;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "h_res_module_L"; hisname  += i;
+    TString hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_sensor0";
     TString layer = "L"; layer+=i; layer+= "BS"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
@@ -448,26 +499,30 @@ void plotResidualsInitial(char* fname){
     TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();
-
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    TF1 *fit = his->GetFunction("gaus");
+    Double_t up = his->GetMean()+w*his->GetRMS();    
+    Bool_t isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
     
-    cout << "sensor " << i << " stereo mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    mean1Bot->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
-    mean1Bot->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-    hisname = "h_res_module_L"; hisname  += i;
+      cout << "sensor " << i << " stereo mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      mean1Bot->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
+      mean1Bot->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean1Bot->SetPoint(np, x[npp-1], -9999.);
+      mean1Bot->SetPointError(np, 0., 0.); np++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
+    hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_sensor0";
     layer = "L"; layer+=i; layer+= "BA"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -485,27 +540,32 @@ void plotResidualsInitial(char* fname){
     pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    fit = his->GetFunction("gaus");
+    up = his->GetMean()+w*his->GetRMS();    
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1* fit = his->GetFunction("gaus");
 
-    cout << "sensor " << i << " axial mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    mean1Bot->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
-    mean1Bot->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
+      cout << "sensor " << i << " axial mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      mean1Bot->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
+      mean1Bot->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean1Bot->SetPoint(np, x[npp-1], -9999.);
+      mean1Bot->SetPointError(np, 0., 0.); np++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
   }
   for(Int_t i=4; i<7; i++){
-    TString hisname = "h_res_module_L"; hisname  += i;
+    TString hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
@@ -523,28 +583,31 @@ void plotResidualsInitial(char* fname){
     TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     Double_t low = his->GetMean()-w*his->GetRMS();
-    Double_t up = his->GetMean()+w*his->GetRMS();
-
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    fit = his->GetFunction("gaus");
-
-    cout << "sensor " << i << " stereo hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    //    mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
-    cout << np1 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
-    mean2Bot->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
-    mean2Bot->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-    hisname = "h_res_module_L"; hisname  += i;
+    Double_t up = his->GetMean()+w*his->GetRMS();    
+    Bool_t isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      cout << "sensor " << i << " stereo hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      //    mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
+      cout << np1 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
+      mean2Bot->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
+      mean2Bot->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean2Bot->SetPoint(np1, x[npp-1], -9999.);
+      mean2Bot->SetPointError(np1, 0., 0.); np1++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
+    hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_hole_sensor0";
     layer = "L"; layer+=i; layer+= "BAHo"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -562,27 +625,31 @@ void plotResidualsInitial(char* fname){
     pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();
+    up = his->GetMean()+w*his->GetRMS();    
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1* fit = his->GetFunction("gaus");
 
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    TF1 *fit = his->GetFunction("gaus");
-    cout << "sensor " << i << " axial hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-
-    cout << np1 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
-    mean2Bot->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
-    mean2Bot->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
- 
-    hisname = "h_res_module_L"; hisname  += i;
+      cout << "sensor " << i << " axial hole mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " axial hole mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      cout << np1 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
+      mean2Bot->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
+      mean2Bot->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean2Bot->SetPoint(np1, x[npp-1], -9999.);
+      mean2Bot->SetPointError(np1, 0., 0.); np1++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
+    hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BSSl"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -600,28 +667,32 @@ void plotResidualsInitial(char* fname){
     pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
-    up = his->GetMean()+w*his->GetRMS();
+    up = his->GetMean()+w*his->GetRMS();    
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1* fit = his->GetFunction("gaus");
 
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    fit = his->GetFunction("gaus");
-
-    cout << "sensor " << i << "stereo slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    npp +=4;
-    cout << np2 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
-    mean3Bot->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
-    mean3Bot->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-    hisname = "h_res_module_L"; hisname  += i;
+      cout << "sensor " << i << " stereo slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " stereo slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      npp += 4;
+      cout << np2 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
+      mean3Bot->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
+      mean3Bot->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean3Bot->SetPoint(np2, x[npp-1], -9999.);
+      mean3Bot->SetPointError(np2, 0., 0.); np2++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
+    hisname = "residual_before_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BASl"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -640,26 +711,29 @@ void plotResidualsInitial(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();
-
-
-    his->Fit("gaus","Q","",low,up);
-    his->Draw();
-    fit = his->GetFunction("gaus");
-
-    cout << "sensor " << i << " axial slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    
-    cout << np2 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
-    mean3Bot->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
-    mean3Bot->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp -= 5;
+    isFit = his->Fit("gaus","Q","",low,up);    
+    if(!isFit){
+      TF1* fit = his->GetFunction("gaus");
+      
+      cout << "sensor " << i << " axial slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " axial slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      cout << np2 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
+      mean3Bot->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
+      mean3Bot->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp -=5;
+    }else{
+      mean3Bot->SetPoint(np2, x[npp-1], -9999.);
+      mean3Bot->SetPointError(np2, 0., 0.); np2++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp -=5;
+    }
   }
 
 
@@ -669,9 +743,9 @@ void plotResidualsInitial(char* fname){
   mean1Top->SetMarkerStyle(20);
   mean2Top->SetMarkerStyle(20);
   mean3Top->SetMarkerStyle(20);
-  mean1Top->SetMarkerColor(kGray);
-  mean2Top->SetMarkerColor(kCyan-8);
-  mean3Top->SetMarkerColor(kMagenta-8);
+  mean1Top->SetMarkerColor(kBlack);
+  mean2Top->SetMarkerColor(kCyan);
+  mean3Top->SetMarkerColor(kMagenta);
   meanTop->SetMarkerStyle(20);
   meanTop->SetMarkerColor(kBlue);
 
@@ -689,7 +763,7 @@ void plotResidualsInitial(char* fname){
   mgTop->Draw("AP");
   mgTop->GetXaxis()->SetRangeUser(0.5,6.5);
   //  mgTop->GetYaxis()->SetRangeUser(-12,12);
-  mgTop->GetYaxis()->SetRangeUser(-150,150);
+  mgTop->GetYaxis()->SetRangeUser(-500,500);
   mgTop->GetXaxis()->SetTitle("layer");
   mgTop->GetYaxis()->SetTitle("residual [#mum]");
   mgTop->Draw("AP");
@@ -700,9 +774,9 @@ void plotResidualsInitial(char* fname){
   mean1Bot->SetMarkerStyle(20);
   mean2Bot->SetMarkerStyle(20);
   mean3Bot->SetMarkerStyle(20);
-  mean1Bot->SetMarkerColor(kGray);
-  mean2Bot->SetMarkerColor(kCyan-8);
-  mean3Bot->SetMarkerColor(kMagenta-8);
+  mean1Bot->SetMarkerColor(kBlack);
+  mean2Bot->SetMarkerColor(kCyan);
+  mean3Bot->SetMarkerColor(kMagenta);
   meanBot->SetMarkerStyle(20);
   meanBot->SetMarkerColor(kBlue);
 
@@ -719,7 +793,7 @@ void plotResidualsInitial(char* fname){
   mgBot->Draw("AP");
   mgBot->GetXaxis()->SetRangeUser(0.5,6.5);
   //  mgBot->GetYaxis()->SetRangeUser(-12,12);
-  mgBot->GetYaxis()->SetRangeUser(-150,150);
+  mgBot->GetYaxis()->SetRangeUser(-500,500);
   mgBot->GetXaxis()->SetTitle("layer");
   mgBot->GetYaxis()->SetTitle("residual [#mum]");
   mgBot->Draw("AP");
@@ -728,15 +802,12 @@ void plotResidualsInitial(char* fname){
   zero->Draw("same");
 
   outf.close();
-
-  //  outf.close();
   cTop->SaveAs(topName.Data());
   cBot->SaveAs(botName.Data());
-
-  TString mean = "mean_"; mean += outn.Data(); mean += "_TopBot_inigif";
+  TString mean = "mean_"; mean += outn.Data(); mean += "_TopBot_INI.gif";
   cmeanAll->SaveAs(mean.Data());
 				
-  TFile *g = new TFile("plotResidualsIni__graphs.root","RECREATE");
+  TFile *g = new TFile("plotResidualsINI__graphs.root","RECREATE");
   g->cd();
   mgBot->SetName("mgBot");
   mgTop->SetName("mgTop");
@@ -748,5 +819,6 @@ void plotResidualsInitial(char* fname){
   meanBot->Write();
 
   g->Close();
+
 
 }
