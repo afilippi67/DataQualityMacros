@@ -5,5 +5,6 @@
 #
 export INP=$1
 export NAME=$2
-./makeAllPlots4OneRun.sh $INP $NAME
+export YR=$3
+./makeAllPlots4OneRun.sh $INP $NAME $YR
 gthumb run_$NAME/*.gif
