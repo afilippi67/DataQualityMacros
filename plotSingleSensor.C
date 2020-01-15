@@ -6,8 +6,9 @@
 #include <TProfile.h>
 #include <TCanvas.h>
 #include <TStyle.h>
+#include <TF1.h>
 
-void plotSingleSensor(Char_t *sensor, Char_t *file){
+void plotSingleSensor(const Char_t *sensor, const Char_t *file){
 
   gStyle->SetOptStat(0);
   TString filename = file;
@@ -21,12 +22,9 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   TString nam2B;
   TString nam3T;
   TString nam3B;
-  // x2	 
-  TString nam3T;
-  TString nam3B;
-  // x2	 
   TString nam4T;
   TString nam4B;
+  // x2	 
   TString nam5T;
   TString nam5B;
   TString nam6T;
@@ -42,8 +40,6 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   TString nam2BS;
   TString nam3TS;
   TString nam3BS;
-  TString nam3TS;
-  TString nam3BS;
   TString nam4TS;
   TString nam4BS;
   TString nam5TS;
@@ -55,135 +51,119 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   TString nam8TS;
   TString nam8BS;
   
-  // pick up interesting histograms
-  if(is<4){
-    nam1T = "h_res_module_L"; nam1T+=is; nam1T += "t_halfmodule_axial_sensor0";
-    nam1B = "h_res_module_L"; nam1B+=is; nam1B += "b_halfmodule_axial_sensor0";
-    nam2T = "h_res_gbl_module_L"; nam2T+=is; nam2T += "t_halfmodule_axial_sensor0";
-    nam2B = "h_res_gbl_module_L"; nam2B+=is; nam2B += "b_halfmodule_axial_sensor0";
-    nam3T = "h_res_gbl_vs_u_module_L"; nam3T+=is; nam3T += "t_halfmodule_axial_sensor0";
-    nam3B = "h_res_gbl_vs_u_module_L"; nam3B+=is; nam3B += "b_halfmodule_axial_sensor0";
-    nam4T = "h_res_gbl_vs_vpred_module_L"; nam4T+=is; nam4T += "t_halfmodule_axial_sensor0";
-    nam4B = "h_res_gbl_vs_vpred_module_L"; nam4B+=is; nam4B += "b_halfmodule_axial_sensor0";
-    nam5T = "h_xy_module_L"; nam5T+=is; nam5T += "t_halfmodule_axial_sensor0";
-    nam5B = "h_xy_module_L"; nam5B+=is; nam5B += "b_halfmodule_axial_sensor0";
-    nam6T = "h_pred_module_L"; nam6T+=is; nam6T += "t_halfmodule_axial_sensor0";
-    nam6B = "h_pred_module_L"; nam6B+=is; nam6B += "b_halfmodule_axial_sensor0";
-    nam7T = "h_corrdiff_lambda_module_L"; nam7T+=is; nam7T += "t_halfmodule_axial_sensor0";
-    nam7B = "h_corrdiff_lambda_module_L"; nam7B+=is; nam7B += "b_halfmodule_axial_sensor0";
-    nam8T = "h_corrdiff_phi_module_L"; nam8T+=is; nam8T += "t_halfmodule_axial_sensor0";
-    nam8B = "h_corrdiff_phi_module_L"; nam8B+=is; nam8B += "b_halfmodule_axial_sensor0";
 
-    nam1TS = "h_res_module_L"; nam1TS+=is; nam1TS += "t_halfmodule_stereo_sensor0";
-    nam1BS = "h_res_module_L"; nam1BS+=is; nam1BS += "b_halfmodule_stereo_sensor0";
-    nam2TS = "h_res_gbl_module_L"; nam2TS+=is; nam2TS += "t_halfmodule_stereo_sensor0";
-    nam2BS = "h_res_gbl_module_L"; nam2BS+=is; nam2BS += "b_halfmodule_stereo_sensor0";
-    nam3TS = "h_res_gbl_vs_u_module_L"; nam3TS+=is; nam3TS += "t_halfmodule_stereo_sensor0";
-    nam3BS = "h_res_gbl_vs_u_module_L"; nam3BS+=is; nam3BS += "b_halfmodule_stereo_sensor0";
-    	     	
-    nam4TS = "h_res_gbl_vs_vpred_module_L"; nam4TS+=is; nam4TS += "t_halfmodule_stereo_sensor0";
-    nam4BS = "h_res_gbl_vs_vpred_module_L"; nam4BS+=is; nam4BS += "b_halfmodule_stereo_sensor0";
-    nam5TS = "h_xy_module_L"; nam5TS+=is; nam5TS += "t_halfmodule_stereo_sensor0";
-    nam5BS = "h_xy_module_L"; nam5BS+=is; nam5BS += "b_halfmodule_stereo_sensor0";
-    nam6TS = "h_pred_module_L"; nam6TS+=is; nam6TS += "t_halfmodule_stereo_sensor0";
-    nam6BS = "h_pred_module_L"; nam6BS+=is; nam6BS += "b_halfmodule_stereo_sensor0";
-    nam7TS = "h_corrdiff_lambda_module_L"; nam7TS+=is; nam7TS += "t_halfmodule_stereo_sensor0";
-    nam7BS = "h_corrdiff_lambda_module_L"; nam7BS+=is; nam7BS += "b_halfmodule_stereo_sensor0";
-    nam8TS = "h_corrdiff_phi_module_L"; nam8TS+=is; nam8TS += "t_halfmodule_stereo_sensor0";
-    nam8BS = "h_corrdiff_phi_module_L"; nam8BS+=is; nam8BS += "b_halfmodule_stereo_sensor0";
-	       
+  // pick up interesting histograms
+  if(is<5){
+    nam1T = "residual_before_GBL_module_L"              ; nam1T+=is; nam1T += "t_halfmodule_axial_sensor0";
+    nam1B = "residual_before_GBL_module_L"              ; nam1B+=is; nam1B += "b_halfmodule_axial_sensor0";
+    nam2T = "residual_after_GBL_module_L"               ; nam2T+=is; nam2T += "t_halfmodule_axial_sensor0";
+    nam2B = "residual_after_GBL_module_L"               ; nam2B+=is; nam2B += "b_halfmodule_axial_sensor0";
+    nam3T = "residual_after_GBL_vs_u_hit_module_L"      ; nam3T+=is; nam3T += "t_halfmodule_axial_sensor0";
+    nam3B = "residual_after_GBL_vs_u_hit_module_L"      ; nam3B+=is; nam3B += "b_halfmodule_axial_sensor0";
+    nam4T = "residual_after_GBL_vs_v_predicted_module_L"; nam4T+=is; nam4T += "t_halfmodule_axial_sensor0";
+    nam4B = "residual_after_GBL_vs_v_predicted_module_L"; nam4B+=is; nam4B += "b_halfmodule_axial_sensor0";
+    nam5T = "hit_v_vs_u_sensor-frame_module_L"          ; nam5T+=is; nam5T += "t_halfmodule_axial_sensor0";
+    nam5B = "hit_v_vs_u_sensor-frame_module_L"          ; nam5B+=is; nam5B += "b_halfmodule_axial_sensor0";
+    nam6T = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6T+=is; nam6T += "t_halfmodule_axial_sensor0";
+    nam6B = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6B+=is; nam6B += "b_halfmodule_axial_sensor0";
+    nam7T = "lambda_kink_module_L"                      ; nam7T+=is; nam7T += "t_halfmodule_axial_sensor0";
+    nam7B = "lambda_kink_module_L"                      ; nam7B+=is; nam7B += "b_halfmodule_axial_sensor0";
+    nam8T = "phi_kink_module_L"                         ; nam8T+=is; nam8T += "t_halfmodule_axial_sensor0";
+    nam8B = "phi_kink_module_L"                         ; nam8B+=is; nam8B += "b_halfmodule_axial_sensor0";
+
+    ////////////////////////////////////
+
+    nam1TS = "residual_before_GBL_module_L"              ; nam1TS+=is; nam1TS += "t_halfmodule_stereo_sensor0";
+    nam1BS = "residual_before_GBL_module_L"              ; nam1BS+=is; nam1BS += "b_halfmodule_stereo_sensor0";
+    nam2TS = "residual_after_GBL_module_L"               ; nam2TS+=is; nam2TS += "t_halfmodule_stereo_sensor0";
+    nam2BS = "residual_after_GBL_module_L"               ; nam2BS+=is; nam2BS += "b_halfmodule_stereo_sensor0";
+    nam3TS = "residual_after_GBL_vs_u_hit_module_L"      ; nam3TS+=is; nam3TS += "t_halfmodule_stereo_sensor0";
+    nam3BS = "residual_after_GBL_vs_u_hit_module_L"      ; nam3BS+=is; nam3BS += "b_halfmodule_stereo_sensor0";
+    nam4TS = "residual_after_GBL_vs_v_predicted_module_L"; nam4TS+=is; nam4TS += "t_halfmodule_stereo_sensor0";
+    nam4BS = "residual_after_GBL_vs_v_predicted_module_L"; nam4BS+=is; nam4BS += "b_halfmodule_stereo_sensor0";
+    nam5TS = "hit_v_vs_u_sensor-frame_module_L"          ; nam5TS+=is; nam5TS += "t_halfmodule_stereo_sensor0";
+    nam5BS = "hit_v_vs_u_sensor-frame_module_L"          ; nam5BS+=is; nam5BS += "b_halfmodule_stereo_sensor0";
+    nam6TS = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6TS+=is; nam6TS += "t_halfmodule_stereo_sensor0";
+    nam6BS = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6BS+=is; nam6BS += "b_halfmodule_stereo_sensor0";
+    nam7TS = "lambda_kink_module_L"                      ; nam7TS+=is; nam7TS += "t_halfmodule_stereo_sensor0";
+    nam7BS = "lambda_kink_module_L"                      ; nam7BS+=is; nam7BS += "b_halfmodule_stereo_sensor0";
+    nam8TS = "phi_kink_module_L"                         ; nam8TS+=is; nam8TS += "t_halfmodule_stereo_sensor0";
+    nam8BS = "phi_kink_module_L"                         ; nam8BS+=is; nam8BS += "b_halfmodule_stereo_sensor0";
 
   }else{
     // is it slot or hole?
     if(sensName.Contains("H")){
-      nam1T = "h_res_module_L"; nam1T+=is; nam1T += "t_halfmodule_axial_hole_sensor0";
-      nam1B = "h_res_module_L"; nam1B+=is; nam1B += "b_halfmodule_axial_hole_sensor0";
-      nam2T = "h_res_gbl_module_L"; nam2T+=is; nam2T += "t_halfmodule_axial_hole_sensor0";
-      nam2B = "h_res_gbl_module_L"; nam2B+=is; nam2B += "b_halfmodule_axial_hole_sensor0";
-      nam3T = "h_res_gbl_vs_u_module_L"; nam3T+=is; nam3T += "t_halfmodule_axial_hole_sensor0";
-      nam3B = "h_res_gbl_vs_u_module_L"; nam3B+=is; nam3B += "b_halfmodule_axial_hole_sensor0";
-      
-      nam3T = "h_res_gbl_vs_u_module_L"; nam3T+=is; nam3T += "t_halfmodule_axial_hole_sensor0";
-      nam3B = "h_res_gbl_vs_u_module_L"; nam3B+=is; nam3B += "b_halfmodule_axial_hole_sensor0";
-      
-      nam4T = "h_res_gbl_vs_vpred_module_L"; nam4T+=is; nam4T += "t_halfmodule_axial_hole_sensor0";
-      nam4B = "h_res_gbl_vs_vpred_module_L"; nam4B+=is; nam4B += "b_halfmodule_axial_hole_sensor0";
-      nam5T = "h_xy_module_L"; nam5T+=is; nam5T += "t_halfmodule_axial_hole_sensor0";
-      nam5B = "h_xy_module_L"; nam5B+=is; nam5B += "b_halfmodule_axial_hole_sensor0";
-      nam6T = "h_pred_module_L"; nam6T+=is; nam6T += "t_halfmodule_axial_hole_sensor0";
-      nam6B = "h_pred_module_L"; nam6B+=is; nam6B += "b_halfmodule_axial_hole_sensor0";
-      nam7T = "h_corrdiff_lambda_module_L"; nam7T+=is; nam7T += "t_halfmodule_axial_hole_sensor0";
-      nam7B = "h_corrdiff_lambda_module_L"; nam7B+=is; nam7B += "b_halfmodule_axial_hole_sensor0";
-      nam8T = "h_corrdiff_phi_module_L"; nam8T+=is; nam8T += "t_halfmodule_axial_hole_sensor0";
-      nam8B = "h_corrdiff_phi_module_L"; nam8B+=is; nam8B += "b_halfmodule_axial_hole_sensor0";
-      
-      nam1TS = "h_res_module_L"; nam1TS+=is; nam1TS += "t_halfmodule_stereo_hole_sensor0";
-      nam1BS = "h_res_module_L"; nam1BS+=is; nam1BS += "b_halfmodule_stereo_hole_sensor0";
-      nam2TS = "h_res_gbl_module_L"; nam2TS+=is; nam2TS += "t_halfmodule_stereo_hole_sensor0";
-      nam2BS = "h_res_gbl_module_L"; nam2BS+=is; nam2BS += "b_halfmodule_stereo_hole_sensor0";
-      nam3TS = "h_res_gbl_vs_u_module_L"; nam3TS+=is; nam3TS += "t_halfmodule_stereo_hole_sensor0";
-      nam3BS = "h_res_gbl_vs_u_module_L"; nam3BS+=is; nam3BS += "b_halfmodule_stereo_hole_sensor0";
-      
-      nam3TS = "h_res_gbl_vs_u_module_L"; nam3TS+=is; nam3TS += "t_halfmodule_stereo_hole_sensor0";
-      nam3BS = "h_res_gbl_vs_u_module_L"; nam3BS+=is; nam3BS += "b_halfmodule_stereo_hole_sensor0";
-      
-      nam4TS = "h_res_gbl_vs_vpred_module_L"; nam4TS+=is; nam4TS += "t_halfmodule_stereo_hole_sensor0";
-      nam4BS = "h_res_gbl_vs_vpred_module_L"; nam4BS+=is; nam4BS += "b_halfmodule_stereo_hole_sensor0";
-      nam5TS = "h_xy_module_L"; nam5TS+=is; nam5TS += "t_halfmodule_stereo_hole_sensor0";
-      nam5BS = "h_xy_module_L"; nam5BS+=is; nam5BS += "b_halfmodule_stereo_hole_sensor0";
-      nam6TS = "h_pred_module_L"; nam6TS+=is; nam6TS += "t_halfmodule_stereo_hole_sensor0";
-      nam6BS = "h_pred_module_L"; nam6BS+=is; nam6BS += "b_halfmodule_stereo_hole_sensor0";
-      nam7TS = "h_corrdiff_lambda_module_L"; nam7TS+=is; nam7TS += "t_halfmodule_stereo_hole_sensor0";
-      nam7BS = "h_corrdiff_lambda_module_L"; nam7BS+=is; nam7BS += "b_halfmodule_stereo_hole_sensor0";
-      nam8TS = "h_corrdiff_phi_module_L"; nam8TS+=is; nam8TS += "t_halfmodule_stereo_hole_sensor0";
-      nam8BS = "h_corrdiff_phi_module_L"; nam8BS+=is; nam8BS += "b_halfmodule_stereo_hole_sensor0";
-      
+      nam1T = "residual_before_GBL_module_L"              ; nam1T+=is; nam1T += "t_halfmodule_axial_hole_sensor0";
+      nam1B = "residual_before_GBL_module_L"              ; nam1B+=is; nam1B += "b_halfmodule_axial_hole_sensor0";
+      nam2T = "residual_after_GBL_module_L"               ; nam2T+=is; nam2T += "t_halfmodule_axial_hole_sensor0";
+      nam2B = "residual_after_GBL_module_L"               ; nam2B+=is; nam2B += "b_halfmodule_axial_hole_sensor0";
+      nam3T = "residual_after_GBL_vs_u_hit_module_L"      ; nam3T+=is; nam3T += "t_halfmodule_axial_hole_sensor0";
+      nam3B = "residual_after_GBL_vs_u_hit_module_L"      ; nam3B+=is; nam3B += "b_halfmodule_axial_hole_sensor0";
+      nam4T = "residual_after_GBL_vs_v_predicted_module_L"; nam4T+=is; nam4T += "t_halfmodule_axial_hole_sensor0";
+      nam4B = "residual_after_GBL_vs_v_predicted_module_L"; nam4B+=is; nam4B += "b_halfmodule_axial_hole_sensor0";
+      nam5T = "hit_v_vs_u_sensor-frame_module_L"          ; nam5T+=is; nam5T += "t_halfmodule_axial_hole_sensor0";
+      nam5B = "hit_v_vs_u_sensor-frame_module_L"          ; nam5B+=is; nam5B += "b_halfmodule_axial_hole_sensor0";
+      nam6T = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6T+=is; nam6T += "t_halfmodule_axial_hole_sensor0";
+      nam6B = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6B+=is; nam6B += "b_halfmodule_axial_hole_sensor0";
+      nam7T = "lambda_kink_module_L"                      ; nam7T+=is; nam7T += "t_halfmodule_axial_hole_sensor0";
+      nam7B = "lambda_kink_module_L"                      ; nam7B+=is; nam7B += "b_halfmodule_axial_hole_sensor0";
+      nam8T = "phi_kink_module_L"                         ; nam8T+=is; nam8T += "t_halfmodule_axial_hole_sensor0";
+      nam8B = "phi_kink_module_L"                         ; nam8B+=is; nam8B += "b_halfmodule_axial_hole_sensor0";
+
+      nam1TS = "residual_before_GBL_module_L"              ; nam1TS+=is; nam1TS += "t_halfmodule_stereo_hole_sensor0";
+      nam1BS = "residual_before_GBL_module_L"              ; nam1BS+=is; nam1BS += "b_halfmodule_stereo_hole_sensor0";
+      nam2TS = "residual_after_GBL_module_L"               ; nam2TS+=is; nam2TS += "t_halfmodule_stereo_hole_sensor0";
+      nam2BS = "residual_after_GBL_module_L"               ; nam2BS+=is; nam2BS += "b_halfmodule_stereo_hole_sensor0";
+      nam3TS = "residual_after_GBL_vs_u_hit_module_L"      ; nam3TS+=is; nam3TS += "t_halfmodule_stereo_hole_sensor0";
+      nam3BS = "residual_after_GBL_vs_u_hit_module_L"      ; nam3BS+=is; nam3BS += "b_halfmodule_stereo_hole_sensor0";
+      nam4TS = "residual_after_GBL_vs_v_predicted_module_L"; nam4TS+=is; nam4TS += "t_halfmodule_stereo_hole_sensor0";
+      nam4BS = "residual_after_GBL_vs_v_predicted_module_L"; nam4BS+=is; nam4BS += "b_halfmodule_stereo_hole_sensor0";
+      nam5TS = "hit_v_vs_u_sensor-frame_module_L"          ; nam5TS+=is; nam5TS += "t_halfmodule_stereo_hole_sensor0";
+      nam5BS = "hit_v_vs_u_sensor-frame_module_L"          ; nam5BS+=is; nam5BS += "b_halfmodule_stereo_hole_sensor0";
+      nam6TS = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6TS+=is; nam6TS += "t_halfmodule_stereo_hole_sensor0";
+      nam6BS = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6BS+=is; nam6BS += "b_halfmodule_stereo_hole_sensor0";
+      nam7TS = "lambda_kink_module_L"                      ; nam7TS+=is; nam7TS += "t_halfmodule_stereo_hole_sensor0";
+      nam7BS = "lambda_kink_module_L"                      ; nam7BS+=is; nam7BS += "b_halfmodule_stereo_hole_sensor0";
+      nam8TS = "phi_kink_module_L"                         ; nam8TS+=is; nam8TS += "t_halfmodule_stereo_hole_sensor0";
+      nam8BS = "phi_kink_module_L"                         ; nam8BS+=is; nam8BS += "b_halfmodule_stereo_hole_sensor0";
+
     }else if(sensName.Contains("S")){
       //      cout << " here I am " << endl;
-      nam1T = "h_res_module_L"; nam1T+=is; nam1T += "t_halfmodule_axial_slot_sensor0";
-      nam1B = "h_res_module_L"; nam1B+=is; nam1B += "b_halfmodule_axial_slot_sensor0";
-      nam2T = "h_res_gbl_module_L"; nam2T+=is; nam2T += "t_halfmodule_axial_slot_sensor0";
-      nam2B = "h_res_gbl_module_L"; nam2B+=is; nam2B += "b_halfmodule_axial_slot_sensor0";
-      nam3T = "h_res_gbl_vs_u_module_L"; nam3T+=is; nam3T += "t_halfmodule_axial_slot_sensor0";
-      nam3B = "h_res_gbl_vs_u_module_L"; nam3B+=is; nam3B += "b_halfmodule_axial_slot_sensor0";
-      
-      nam3T = "h_res_gbl_vs_u_module_L"; nam3T+=is; nam3T += "t_halfmodule_axial_slot_sensor0";
-      nam3B = "h_res_gbl_vs_u_module_L"; nam3B+=is; nam3B += "b_halfmodule_axial_slot_sensor0";
-      
-      nam4T = "h_res_gbl_vs_vpred_module_L"; nam4T+=is; nam4T += "t_halfmodule_axial_slot_sensor0";
-      nam4B = "h_res_gbl_vs_vpred_module_L"; nam4B+=is; nam4B += "b_halfmodule_axial_slot_sensor0";
-      nam5T = "h_xy_module_L"; nam5T+=is; nam5T += "t_halfmodule_axial_slot_sensor0";
-      nam5B = "h_xy_module_L"; nam5B+=is; nam5B += "b_halfmodule_axial_slot_sensor0";
-      nam6T = "h_pred_module_L"; nam6T+=is; nam6T += "t_halfmodule_axial_slot_sensor0";
-      nam6B = "h_pred_module_L"; nam6B+=is; nam6B += "b_halfmodule_axial_slot_sensor0";
-      nam7T = "h_corrdiff_lambda_module_L"; nam7T+=is; nam7T += "t_halfmodule_axial_slot_sensor0";
-      nam7B = "h_corrdiff_lambda_module_L"; nam7B+=is; nam7B += "b_halfmodule_axial_slot_sensor0";
-      nam8T = "h_corrdiff_phi_module_L"; nam8T+=is; nam8T += "t_halfmodule_axial_slot_sensor0";
-      nam8B = "h_corrdiff_phi_module_L"; nam8B+=is; nam8B += "b_halfmodule_axial_slot_sensor0";
-      
-      nam1TS = "h_res_module_L"; nam1TS+=is; nam1TS += "t_halfmodule_stereo_slot_sensor0";
-      nam1BS = "h_res_module_L"; nam1BS+=is; nam1BS += "b_halfmodule_stereo_slot_sensor0";
-      nam2TS = "h_res_gbl_module_L"; nam2TS+=is; nam2TS += "t_halfmodule_stereo_slot_sensor0";
-      nam2BS = "h_res_gbl_module_L"; nam2BS+=is; nam2BS += "b_halfmodule_stereo_slot_sensor0";
-      nam3TS = "h_res_gbl_vs_u_module_L"; nam3TS+=is; nam3TS += "t_halfmodule_stereo_slot_sensor0";
-      nam3BS = "h_res_gbl_vs_u_module_L"; nam3BS+=is; nam3BS += "b_halfmodule_stereo_slot_sensor0";
-      
-      nam3TS = "h_res_gbl_vs_u_module_L"; nam3TS+=is; nam3TS += "t_halfmodule_stereo_slot_sensor0";
-      nam3BS = "h_res_gbl_vs_u_module_L"; nam3BS+=is; nam3BS += "b_halfmodule_stereo_slot_sensor0";
-      
-      nam4TS = "h_res_gbl_vs_vpred_module_L"; nam4TS+=is; nam4TS += "t_halfmodule_stereo_slot_sensor0";
-      nam4BS = "h_res_gbl_vs_vpred_module_L"; nam4BS+=is; nam4BS += "b_halfmodule_stereo_slot_sensor0";
-      nam5TS = "h_xy_module_L"; nam5TS+=is; nam5TS += "t_halfmodule_stereo_slot_sensor0";
-      nam5BS = "h_xy_module_L"; nam5BS+=is; nam5BS += "b_halfmodule_stereo_slot_sensor0";
-      nam6TS = "h_pred_module_L"; nam6TS+=is; nam6TS += "t_halfmodule_stereo_slot_sensor0";
-      nam6BS = "h_pred_module_L"; nam6BS+=is; nam6BS += "b_halfmodule_stereo_slot_sensor0";
-      nam7TS = "h_corrdiff_lambda_module_L"; nam7TS+=is; nam7TS += "t_halfmodule_stereo_slot_sensor0";
-      nam7BS = "h_corrdiff_lambda_module_L"; nam7BS+=is; nam7BS += "b_halfmodule_stereo_slot_sensor0";
-      nam8TS = "h_corrdiff_phi_module_L"; nam8TS+=is; nam8TS += "t_halfmodule_stereo_slot_sensor0";
-      nam8BS = "h_corrdiff_phi_module_L"; nam8BS+=is; nam8BS += "b_halfmodule_stereo_slot_sensor0";
-      
+      nam1T = "residual_before_GBL_module_L"              ; nam1T+=is; nam1T += "t_halfmodule_axial_slot_sensor0";
+      nam1B = "residual_before_GBL_module_L"              ; nam1B+=is; nam1B += "b_halfmodule_axial_slot_sensor0";
+      nam2T = "residual_after_GBL_module_L"               ; nam2T+=is; nam2T += "t_halfmodule_axial_slot_sensor0";
+      nam2B = "residual_after_GBL_module_L"               ; nam2B+=is; nam2B += "b_halfmodule_axial_slot_sensor0";
+      nam3T = "residual_after_GBL_vs_u_hit_module_L"      ; nam3T+=is; nam3T += "t_halfmodule_axial_slot_sensor0";
+      nam3B = "residual_after_GBL_vs_u_hit_module_L"      ; nam3B+=is; nam3B += "b_halfmodule_axial_slot_sensor0";
+      nam4T = "residual_after_GBL_vs_v_predicted_module_L"; nam4T+=is; nam4T += "t_halfmodule_axial_slot_sensor0";
+      nam4B = "residual_after_GBL_vs_v_predicted_module_L"; nam4B+=is; nam4B += "b_halfmodule_axial_slot_sensor0";
+      nam5T = "hit_v_vs_u_sensor-frame_module_L"          ; nam5T+=is; nam5T += "t_halfmodule_axial_slot_sensor0";
+      nam5B = "hit_v_vs_u_sensor-frame_module_L"          ; nam5B+=is; nam5B += "b_halfmodule_axial_slot_sensor0";
+      nam6T = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6T+=is; nam6T += "t_halfmodule_axial_slot_sensor0";
+      nam6B = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6B+=is; nam6B += "b_halfmodule_axial_slot_sensor0";
+      nam7T = "lambda_kink_module_L"                      ; nam7T+=is; nam7T += "t_halfmodule_axial_slot_sensor0";
+      nam7B = "lambda_kink_module_L"                      ; nam7B+=is; nam7B += "b_halfmodule_axial_slot_sensor0";
+      nam8T = "phi_kink_module_L"                         ; nam8T+=is; nam8T += "t_halfmodule_axial_slot_sensor0";
+      nam8B = "phi_kink_module_L"                         ; nam8B+=is; nam8B += "b_halfmodule_axial_slot_sensor0";
+
+      nam1TS = "residual_before_GBL_module_L"              ; nam1TS+=is; nam1TS += "t_halfmodule_stereo_slot_sensor0";
+      nam1BS = "residual_before_GBL_module_L"              ; nam1BS+=is; nam1BS += "b_halfmodule_stereo_slot_sensor0";
+      nam2TS = "residual_after_GBL_module_L"               ; nam2TS+=is; nam2TS += "t_halfmodule_stereo_slot_sensor0";
+      nam2BS = "residual_after_GBL_module_L"               ; nam2BS+=is; nam2BS += "b_halfmodule_stereo_slot_sensor0";
+      nam3TS = "residual_after_GBL_vs_u_hit_module_L"      ; nam3TS+=is; nam3TS += "t_halfmodule_stereo_slot_sensor0";
+      nam3BS = "residual_after_GBL_vs_u_hit_module_L"      ; nam3BS+=is; nam3BS += "b_halfmodule_stereo_slot_sensor0";
+      nam4TS = "residual_after_GBL_vs_v_predicted_module_L"; nam4TS+=is; nam4TS += "t_halfmodule_stereo_slot_sensor0";
+      nam4BS = "residual_after_GBL_vs_v_predicted_module_L"; nam4BS+=is; nam4BS += "b_halfmodule_stereo_slot_sensor0";
+      nam5TS = "hit_v_vs_u_sensor-frame_module_L"          ; nam5TS+=is; nam5TS += "t_halfmodule_stereo_slot_sensor0";
+      nam5BS = "hit_v_vs_u_sensor-frame_module_L"          ; nam5BS+=is; nam5BS += "b_halfmodule_stereo_slot_sensor0";
+      nam6TS = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6TS+=is; nam6TS += "t_halfmodule_stereo_slot_sensor0";
+      nam6BS = "predicted_v_vs_u_sensor-frame_module_L"    ; nam6BS+=is; nam6BS += "b_halfmodule_stereo_slot_sensor0";
+      nam7TS = "lambda_kink_module_L"                      ; nam7TS+=is; nam7TS += "t_halfmodule_stereo_slot_sensor0";
+      nam7BS = "lambda_kink_module_L"                      ; nam7BS+=is; nam7BS += "b_halfmodule_stereo_slot_sensor0";
+      nam8TS = "phi_kink_module_L"                         ; nam8TS+=is; nam8TS += "t_halfmodule_stereo_slot_sensor0";
+      nam8BS = "phi_kink_module_L"                         ; nam8BS+=is; nam8BS += "b_halfmodule_stereo_slot_sensor0";
     }else{
-      cout << "choose H or S for 4-6 sensors " << endl;
+      cout << "choose H or S for 5-7 sensors " << endl;
     }
   }
   // top
@@ -212,6 +192,7 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   TH1F* his1s = (TH1F*)f1->Get(nam1TS.Data());
   TH1F* his2s = (TH1F*)f1->Get(nam2TS.Data());
   TH2F* his3s = (TH2F*)f1->Get(nam3TS.Data());
+  cout << nam3TS.Data() << endl;
   TProfile* his3ps = (TProfile*)his3s->ProfileX();
   TH2F* his4s = (TH2F*)f1->Get(nam4TS.Data());
   TProfile* his4ps = (TProfile*)his4s->ProfileX();
@@ -231,26 +212,28 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   TH1F* his7bs = (TH1F*)f1->Get(nam7B.Data());
   TH1F* his8bs = (TH1F*)f1->Get(nam8B.Data());
   
-  his1->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his1s->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his2->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his2s->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his7->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his7s->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his8->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his8s->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his1b->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his1bs->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his2b->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his2bs->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his7b->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his7bs->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his8b->GetFunction("gaus")->SetBit(TF1::kNotDraw);
-  his8bs->GetFunction("gaus")->SetBit(TF1::kNotDraw);
   
-  TString title = "unbiased u residual sensor "; title += sensName.Data(); title += " axial top";
+  if((TF1*)his1->GetFunction("gaus")) ((TF1*)his1->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his1s->GetFunction("gaus")) ((TF1*)his1s->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his2->GetFunction("gaus")) ((TF1*)his2->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his2s->GetFunction("gaus")) ((TF1*)his2s->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his7->GetFunction("gaus")) ((TF1*)his7->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his7s->GetFunction("gaus")) ((TF1*)his7s->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his8->GetFunction("gaus")) ((TF1*)his8->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his8s->GetFunction("gaus")) ((TF1*)his8s->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his1b->GetFunction("gaus")) ((TF1*)his1b->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his1bs->GetFunction("gaus")) ((TF1*)his1bs->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his2b->GetFunction("gaus")) ((TF1*)his2b->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his2bs->GetFunction("gaus")) ((TF1*)his2bs->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his7b->GetFunction("gaus")) ((TF1*)his7b->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his7bs->GetFunction("gaus")) ((TF1*)his7bs->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his8b->GetFunction("gaus")) ((TF1*)his8b->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  if((TF1*)his8bs->GetFunction("gaus")) ((TF1*)his8bs->GetFunction("gaus"))->SetBit(TF1::kNotDraw);
+  
+
+  TString title = "u residual before GBL sensor "; title += sensName.Data(); title += " axial top";
   his1->SetTitle(title.Data());
-  title = "unbiased u residual sensor "; title += sensName.Data(); title += " stereo top";
+  title = "u residual before GBL sensor "; title += sensName.Data(); title += " stereo top";
   his1s->SetTitle(title.Data());
   title = "GBL u residual sensor "; title += sensName.Data(); title += " axial top";
   his2->SetTitle(title.Data());
@@ -264,62 +247,56 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   his8->SetTitle(title.Data());
   title = "#phi kink sensor "; title += sensName.Data(); title += " stereo top";
   his8s->SetTitle(title.Data());
-  title = "GBL u residual vs u sensor "; title += sensName.Data(); title += " axial top";
+  title = "GBL u residual vs u hit sensor "; title += sensName.Data(); title += " axial top";
   his3->SetTitle(title.Data());
-  title = "GBL residual vs u sensor "; title += sensName.Data(); title += " stereo top";
+  title = "GBL residual vs u hit ensor "; title += sensName.Data(); title += " stereo top";
   his3s->SetTitle(title.Data());
-  title = "GBL u residual vs v pred pos sensor "; title += sensName.Data(); title += " axial top";
+  title = "GBL u residual vs v predicted pos sensor "; title += sensName.Data(); title += " axial top";
   his4->SetTitle(title.Data());
-  title = "GBL residual vs v pred pos sensor "; title += sensName.Data(); title += " stereo top";
+  title = "GBL residual vs v predicted pos sensor "; title += sensName.Data(); title += " stereo top";
   his4s->SetTitle(title.Data());
-  title = "v pos vs u pos sensor "; title += sensName.Data(); title += " axial top";
-  /*
+  title = "hit v vs u position sensor "; title += sensName.Data(); title += " axial top";
   his5->SetTitle(title.Data());
-  title = "v pos vs u pos sensor "; title += sensName.Data(); title += " stereo top";
+  title = "hit v vs u position sensor "; title += sensName.Data(); title += " stereo top";
   his5s->SetTitle(title.Data());
-  */
-  title = "u vs v predicted position sensor "; title += sensName.Data(); title += " axial top";
+  title = "predicted u vs v position sensor "; title += sensName.Data(); title += " axial top";
   his6->SetTitle(title.Data());
-  title = "u vs v predicted position sensor "; title += sensName.Data(); title += " stereo top";
+  title = "predicted u vs v position sensor "; title += sensName.Data(); title += " stereo top";
   his6s->SetTitle(title.Data());
-  
 
-  title = "unbiased u residual sensor "; title += sensName.Data(); title += " stereo bottom";
+  title = "u residual before GBL sensor "; title += sensName.Data(); title += " axial bottom";
   his1b->SetTitle(title.Data());
-  title = "unbiased u residual sensor "; title += sensName.Data(); title += " axial bottom";
+  title = "u residual before GBL sensor "; title += sensName.Data(); title += " stereo bottom";
   his1bs->SetTitle(title.Data());
-  title = "GBL u residual sensor "; title += sensName.Data(); title += " stereo bottom";
-  his2b->SetTitle(title.Data());
   title = "GBL u residual sensor "; title += sensName.Data(); title += " axial bottom";
+  his2b->SetTitle(title.Data());
+  title = "GBL u residual sensor "; title += sensName.Data(); title += " stereo bottom";
   his2bs->SetTitle(title.Data());
-  title = "#lambda kink sensor "; title += sensName.Data(); title += " stereo bottom";
-  his7b->SetTitle(title.Data());
   title = "#lambda kink sensor "; title += sensName.Data(); title += " axial bottom";
+  his7b->SetTitle(title.Data());
+  title = "#lambda kink sensor "; title += sensName.Data(); title += " stereo bottom";
   his7bs->SetTitle(title.Data());
-  title = "#phi kink sensor "; title += sensName.Data(); title += " stereo bottom";
-  his8b->SetTitle(title.Data());
   title = "#phi kink sensor "; title += sensName.Data(); title += " axial bottom";
+  his8b->SetTitle(title.Data());
+  title = "#phi kink sensor "; title += sensName.Data(); title += " stereo bottom";
   his8bs->SetTitle(title.Data());
-  title = "GBL u residual vs u sensor "; title += sensName.Data(); title += " stereo bottom";
+  title = "GBL u residual vs u hit sensor "; title += sensName.Data(); title += " axial bottom";
   his3b->SetTitle(title.Data());
-  title = "GBL residual vs u sensor "; title += sensName.Data(); title += " axial bottom";
+  title = "GBL residual vs u hit ensor "; title += sensName.Data(); title += " stereo bottom";
   his3bs->SetTitle(title.Data());
-  title = "GBL u residual vs v pred pos sensor "; title += sensName.Data(); title += " stereo bottom";
+  title = "GBL u residual vs v predicted pos sensor "; title += sensName.Data(); title += " axial bottom";
   his4b->SetTitle(title.Data());
-  title = "GBL residual vs v pred pos sensor "; title += sensName.Data(); title += " axial bottom";
+  title = "GBL residual vs v predicted pos sensor "; title += sensName.Data(); title += " stereo bottom";
   his4bs->SetTitle(title.Data());
-  /*
-  title = "v pos vs u pos sensor "; title += sensName.Data(); title += " stereo bottom";
+  title = "hit v vs u position sensor "; title += sensName.Data(); title += " axial bottom";
   his5b->SetTitle(title.Data());
-  title = "v pos vs u pos sensor "; title += sensName.Data(); title += " axial bottom";
+  title = "hit v vs u position sensor "; title += sensName.Data(); title += " stereo bottom";
   his5bs->SetTitle(title.Data());
-  */
-  title = "u vs v predicted position sensor "; title += sensName.Data(); title += " stereo bottom";
+  title = "predicted u vs v position sensor "; title += sensName.Data(); title += " axial bottom";
   his6b->SetTitle(title.Data());
-  title = "u vs v predicted position sensor "; title += sensName.Data(); title += " axial bottom";
+  title = "predicted u vs v position sensor "; title += sensName.Data(); title += " stereo bottom";
   his6bs->SetTitle(title.Data());
   
-
   his1->SetFillStyle(3001); 
   his1s->SetFillStyle(3001); 
   his2->SetFillStyle(3001); 
@@ -365,18 +342,18 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   his1->Draw(); win++; cTop->cd(win);
   his1s->Draw(); win++; cTop->cd(win);
   his2->Draw(); win++; cTop->cd(win);
-  his2s->Draw(); win++; cTop->cd(win);
+  his2s->Draw(); win++; win++; cTop->cd(win);
   his7->Draw(); win++; cTop->cd(win);
   his7s->Draw(); win++; cTop->cd(win);
   his8->Draw(); win++; cTop->cd(win);
-  his8s->Draw(); win++; cTop->cd(win);
+  his8s->Draw(); win++; win++; cTop->cd(win);
   his3->Draw("colz"); win++; cTop->cd(win);
-  his3s->Draw("colz"); win++; cTop->cd(win);
   his3p->Draw(); win++; cTop->cd(win);
+  his3s->Draw("colz"); win++; cTop->cd(win);
   his3ps->Draw(); win++; cTop->cd(win);
   his4->Draw("colz"); win++; cTop->cd(win);
-  his4s->Draw("colz"); win++; cTop->cd(win);
   his4p->Draw(); win++; cTop->cd(win);
+  his4s->Draw("colz"); win++; cTop->cd(win);
   his4ps->Draw(); win++; cTop->cd(win);
   /*
     his5->Draw("colz"); win++; cTop->cd(win);
@@ -386,23 +363,23 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   his6s->Draw("colz");  
   
   cBot->Divide(5,4);
-  Int_t win=1; cBot->cd(win);
+  win=1; cBot->cd(win);
   his1bs->Draw(); win++; cBot->cd(win);
   his1b->Draw(); win++; cBot->cd(win);
   his2bs->Draw(); win++; cBot->cd(win);
-  his2b->Draw(); win++; cBot->cd(win);
+  his2b->Draw(); win++; win++; cBot->cd(win);
   his7bs->Draw(); win++; cBot->cd(win);
   his7b->Draw(); win++; cBot->cd(win);
   his8bs->Draw(); win++; cBot->cd(win);
-  his8b->Draw(); win++; cBot->cd(win);
-  his3bs->Draw("colz"); win++; cBot->cd(win);
+  his8b->Draw(); win++; win++; cBot->cd(win);
   his3b->Draw("colz"); win++; cBot->cd(win);
-  his3pbs->Draw("colz"); win++; cBot->cd(win);
-  his3pb->Draw("colz"); win++; cBot->cd(win);
-  his4bs->Draw("colz"); win++; cBot->cd(win);
+  his3pb->Draw(); win++; cBot->cd(win);
+  his3bs->Draw("colz"); win++; cBot->cd(win);
+  his3pbs->Draw(); win++; cBot->cd(win);
   his4b->Draw("colz"); win++; cBot->cd(win);
-  his4pbs->Draw(); win++; cBot->cd(win);
   his4pb->Draw(); win++; cBot->cd(win);
+  his4bs->Draw("colz"); win++; cBot->cd(win);
+  his4pbs->Draw(); win++; cBot->cd(win);
   /*
     his5b->Draw("colz"); win++; cBot->cd(win);
     his5bs->Draw("colz"); win++; cBot->cd(win);
@@ -413,7 +390,7 @@ void plotSingleSensor(Char_t *sensor, Char_t *file){
   cout << side.Data() << endl;
   TString out = "sensor_"; out+=side; out+="_top_Plots.gif";
   cTop->SaveAs(out.Data());
-  TString out = "sensor_"; out+=side; out+="_bot_Plots.gif";
+  out = "sensor_"; out+=side; out+="_bot_Plots.gif";
   cBot->SaveAs(out.Data());
 
 }
