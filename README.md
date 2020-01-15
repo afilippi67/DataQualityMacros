@@ -13,12 +13,10 @@ macros for alignment
    4) plotResidualsVSPosProfile_new.C(filename) - profile plot of the U residual vs U coordinate distribution
    5) plotResidualsUVSPosV_new.C(filename) - scatter plot of the U residual vs V coordinate
    6) plotResidualsUVSPosVProfile_new.C(filename) - profile plot of the U residual vs V coordinate distribution
-   7) plotXY.C(filename) - plots of V vs U coordinates of the hit in the sensor
-   8) plotXY_neg.C(filename) - plots of V vs U coordinates of the hit in the sensor for positive tracks (attention: the sign is reversed)
-   9) plotXY_pos.C(filename) - plots of V vs U coordinates of the hit in the sensor for negative tracks (attention: the sign is reversed)
-   10) plotPredXY.C(filename) - plots of predicted XY coordinates of the hit
-   11) plotKinkLambda.C(filename) - plot of the lambda angle kink
-   12) plotKinkPhi.C(filename) - plot of the phi angle kink
-   13) plotSingleSensor.C("sensor",filename) - several distributions per sensor. Sensor name: (1-3),(4-6)(S-H)
-   14) survey_d0z0p.C(filename) - plots of z0, d0 impact parameters, xT, yT target position, momentum spectra
+   7) plotXY.C(filename) - plots of V vs U coordinates of the hit in the sensor frame
+   8) plotPredXY.C(filename) - plots of predicted XY coordinates of the hit
+   9) plotKinkLambda.C(filename) - plot of the lambda angle kink
+   10) plotKinkPhi.C(filename) - plot of the phi angle kink
+   11) plotSingleSensor.C("sensor",filename) - several distributions per sensor. Sensor name: (1-3),(4-6)(S-H)
+   12) survey_d0z0p.C(filename) - plots of z0, d0 impact parameters, xT, yT target position
    All distributions are made for top and bottom sensors
