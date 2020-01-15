@@ -744,8 +744,8 @@ void plotResidualsInitial(char* fname){
   mean2Top->SetMarkerStyle(20);
   mean3Top->SetMarkerStyle(20);
   mean1Top->SetMarkerColor(kBlack);
-  mean2Top->SetMarkerColor(kCyan);
-  mean3Top->SetMarkerColor(kMagenta);
+  mean2Top->SetMarkerColor(kCyan-9);
+  mean3Top->SetMarkerColor(kMagenta-9);
   meanTop->SetMarkerStyle(20);
   meanTop->SetMarkerColor(kBlue);
 
@@ -775,8 +775,8 @@ void plotResidualsInitial(char* fname){
   mean2Bot->SetMarkerStyle(20);
   mean3Bot->SetMarkerStyle(20);
   mean1Bot->SetMarkerColor(kBlack);
-  mean2Bot->SetMarkerColor(kCyan);
-  mean3Bot->SetMarkerColor(kMagenta);
+  mean2Bot->SetMarkerColor(kCyan-9);
+  mean3Bot->SetMarkerColor(kMagenta-9);
   meanBot->SetMarkerStyle(20);
   meanBot->SetMarkerColor(kBlue);
 
