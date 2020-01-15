@@ -109,7 +109,7 @@ void plotKinkPhi(char* fname){
   ic = 2;
   Int_t ipad=0;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    TString hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_sensor0";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
@@ -128,26 +128,33 @@ void plotKinkPhi(char* fname){
     pad->cd();
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();
-    his->Draw();    
-    his->Fit("gaus","Q","",low,up);
-    TF1 *fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " axial mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
+    his->Draw();
+    Bool_t isFit = his->Fit("gaus","Q","",low,up);    
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      /*
+      cout << "sensor " << i << " axial mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
+      */
+	outf << layer.Data() << " " 
+	     << fit->GetParameter(1)*1000. << " " 
+	     << fit->GetParError(1)*1000. << " " 
+	     << fit->GetParameter(2)*1000. << " " 
+	     << fit->GetParError(2)*1000. << " " 
+	     << his->GetEntries() << endl;
+	
+	mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
+	mean1Top->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
+	meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
+	meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+	mean1Top->SetPoint(np, x[npp-1], -9999.);
+	mean1Top->SetPointError(np, 0., 0.); np++;
+	meanTop->SetPoint(npp, x[npp-1], -9999.);
+	meanTop->SetPointError(npp, 0., 0.); npp++;
+    }
 
-    mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
-    mean1Top->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-    hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_sensor0";
     layer = "L"; layer+=i; layer+= "TS"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -166,29 +173,35 @@ void plotKinkPhi(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();
     his->Draw();
-    his->Fit("gaus","Q","",low,up);
-    fit = his->GetFunction("gaus");
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
     /*
     cout << "sensor " << i << " stereo mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
     cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
     */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-    
-
-    mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
-    mean1Top->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+           
+      mean1Top->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
+      mean1Top->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{      
+      mean1Top->SetPoint(np, x[npp-1], -9999.);
+      mean1Top->SetPointError(np, 0., 0.); np++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.);
+      meanTop->SetPointError(npp, 0., 0.); npp++;      
+    }
   }
   //  ic = 19;
   Int_t np1=1, np2=1;
   for(Int_t i=4; i<7; i++){
-    TString hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    TString hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "TAHo"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
@@ -208,26 +221,33 @@ void plotKinkPhi(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();
     his->Draw();
-    his->Fit("gaus","Q","",low,up);
-    TF1 *fit = his->GetFunction("gaus");
-
+    Bool_t isFit = his->Fit("gaus","Q","",low,up);
+    cout << his->GetName() << " " << isFit << endl;
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
     /*
-    cout << "sensor " << i << " axial hole mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial hole mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
+      cout << "sensor " << i << " axial hole mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
+      cout << "sensor " << i << " axial hole mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
     */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      
+      mean2Top->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.); 
+      mean2Top->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean2Top->SetPoint(np1, x[npp-1], -9999.); 
+      mean2Top->SetPointError(np1, 0., 0.); np1++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.);
+      meanTop->SetPointError(npp, 0., 0.); npp++;      
+    }
 
-    mean2Top->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.); 
-    mean2Top->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-    hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_hole_sensor0";
     layer = "L"; layer+=i; layer+= "TSHo"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -246,28 +266,34 @@ void plotKinkPhi(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();
-    his->Draw();    
-    his->Fit("gaus","Q","",low,up);
-    fit = his->GetFunction("gaus");
-
-    /*
-    cout << "sensor " << i << " stereo hole mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-
-    mean2Top->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.); 
-    mean2Top->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-
-    hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    his->Draw();
+    isFit = his->Fit("gaus","Q","",low,up);    
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      
+      /*
+	cout << "sensor " << i << " stereo hole mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
+	cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
+      */
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      
+      mean2Top->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.); 
+      mean2Top->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{      
+      mean2Top->SetPoint(np1, x[npp-1], -9999.); 
+      mean2Top->SetPointError(np1, 0., 0.); np1++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.);
+      meanTop->SetPointError(npp, 0., 0.); npp++;      
+    }
+      
+    hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TASl";     
     his = (TH1D*) f->Get(hisname.Data());
@@ -286,27 +312,35 @@ void plotKinkPhi(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();
-    his->Draw();    
-    his->Fit("gaus","Q","",low,up);
-    fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " axial slot mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial slot mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
+    his->Draw();
+    isFit = his->Fit("gaus","Q","",low,up);    
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      /*
+	cout << "sensor " << i << " axial slot mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
+	cout << "sensor " << i << " axial slot mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
+      */
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      
+      npp += 4;
+      mean3Top->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
+      mean3Top->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+     npp += 4;
+      mean3Top->SetPoint(np2, x[npp-1], -9999.);
+      mean3Top->SetPointError(np2, 0., 0.); np2++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.); 
+      meanTop->SetPointError(npp, 0., 0.); npp++;
+    }
 
-    npp += 4;
-    mean3Top->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
-    mean3Top->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-    hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TSSl"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -325,25 +359,31 @@ void plotKinkPhi(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();
-    his->Draw();    
-    his->Fit("gaus","Q","",low,up);
-    fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " stereo slot mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo slot mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-
-    mean3Top->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
-    mean3Top->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
-    meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp -=5;
-
+    his->Draw();
+    isFit = his->Fit("gaus","Q","",low,up);    
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      /*
+	cout << "sensor " << i << " stereo slot mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
+	cout << "sensor " << i << " stereo slot mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
+      */
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      
+      mean3Top->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
+      mean3Top->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
+      meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp -=5;
+    }else{      
+      mean3Top->SetPoint(np2, x[npp-1], -9999.);
+      mean3Top->SetPointError(np2, 0., 0.); np2++;
+      meanTop->SetPoint(npp, x[npp-1], -9999.); 
+      meanTop->SetPointError(npp, 0., 0.); npp -=5;      
+    }
   }
   cout << endl;
   cout << "------------------------" << endl;
@@ -411,7 +451,7 @@ void plotKinkPhi(char* fname){
   ipad = 0;
   np = np1 = np2 = npp = 1;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    TString hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_sensor0";
     TString layer = "L"; layer+=i; layer+= "BS"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
@@ -431,25 +471,32 @@ void plotKinkPhi(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Draw();
-    his->Fit("gaus","Q","",low,up);
-    TF1 *fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " stereo mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-
-    mean1Bot->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
-    mean1Bot->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-    hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    Bool_t isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      /*
+	cout << "sensor " << i << " stereo mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
+	cout << "sensor " << i << " stereo mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
+      */
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+     
+      mean1Bot->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
+      mean1Bot->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      mean1Bot->SetPoint(np, x[npp-1], -9999.);
+      mean1Bot->SetPointError(np, 0., 0.); np++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
+     
+    hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_sensor0";
     layer = "L"; layer+=i; layer+= "AS"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -469,27 +516,34 @@ void plotKinkPhi(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Draw();
-    his->Fit("gaus","Q","",low,up);
-    fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " axial mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries()*1000. << endl;
-
-    mean1Bot->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
-    mean1Bot->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      /*
+	cout << "sensor " << i << " axial mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
+	cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
+      */
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries()*1000. << endl;
+      
+      mean1Bot->SetPoint(np, x[npp-1], fit->GetParameter(1)*1000.);
+      mean1Bot->SetPointError(np, 0., fit->GetParameter(2)*1000.); np++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{      
+      mean1Bot->SetPoint(np, x[npp-1], -9999.);
+      mean1Bot->SetPointError(np, 0., 0.); np++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
   }
+
   for(Int_t i=4; i<7; i++){
-    TString hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    TString hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
@@ -509,25 +563,32 @@ void plotKinkPhi(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Draw();
-    his->Fit("gaus","Q","",low,up);
-    TF1 *fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " stereo hole mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
+    Bool_t isFit = his->Fit("gaus","Q","",low,up); 
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      /*
+	cout << "sensor " << i << " stereo hole mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
+	cout << "sensor " << i << " stereo hole mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
+      */
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
 
-    mean2Bot->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
-    mean2Bot->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+      mean2Bot->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
+      mean2Bot->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{      
+      mean2Bot->SetPoint(np1, x[npp-1], -9999.);
+      mean2Bot->SetPointError(np1, 0., 0.); np1++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
 
-    hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_hole_sensor0";
     layer = "L"; layer+=i; layer+= "BAHo"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -547,25 +608,32 @@ void plotKinkPhi(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Draw();
-    his->Fit("gaus","Q","",low,up);
-    fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " axial hole mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial hole mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      /*
+	cout << "sensor " << i << " axial hole mean :  " << his->GetMean() << " - RMS : " << his->GetRMS() << " (um) " << " " << his->GetEntries() << endl;
+	cout << "sensor " << i << " axial hole mu :  " << fit->GetParameter(1) << " - sigma : " << fit->GetParameter(2) << " (um) " << endl;
+      */
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      
+      mean2Bot->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
+      mean2Bot->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{      
+      mean2Bot->SetPoint(np1, x[npp-1], -9999.);
+      mean2Bot->SetPointError(np1, 0., 0.); np1++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
 
-    mean2Bot->SetPoint(np1, x[npp-1], fit->GetParameter(1)*1000.);
-    mean2Bot->SetPointError(np1, 0., fit->GetParameter(2)*1000.); np1++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
-
-    hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BSSl"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -585,27 +653,34 @@ void plotKinkPhi(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Draw();
-    his->Fit("gaus","Q","",low,up);
-    fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " stereo slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " stereo slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      /*
+	cout << "sensor " << i << " stereo slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+	cout << "sensor " << i << " stereo slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      */
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
 
-    npp += 4;
-    cout << np2 << " " << npp << " " << x[npp-1] << " " <<  fit->GetParameter(1)*1000. << endl;
-    mean3Bot->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
-    mean3Bot->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+      npp += 4;
+      mean3Bot->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
+      mean3Bot->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
+    }else{
+      npp += 4;
+      mean3Bot->SetPoint(np2, x[npp-1], -9999.);
+      mean3Bot->SetPointError(np2, 0., 0.); np2++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp++;
+    }
 
-    hisname = "h_corrdiff_phi_module_L"; hisname  += i;
+    hisname = "phi_kink_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BASl"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -625,24 +700,30 @@ void plotKinkPhi(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Draw();
-    his->Fit("gaus","Q","",low,up);
-    fit = his->GetFunction("gaus");
-    /*
-    cout << "sensor " << i << " axial slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    cout << "sensor " << i << " axial slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    */
-    outf << layer.Data() << " " 
-	 << fit->GetParameter(1)*1000. << " " 
-	 << fit->GetParError(1)*1000. << " " 
-	 << fit->GetParameter(2)*1000. << " " 
-	 << fit->GetParError(2)*1000. << " " 
-	 << his->GetEntries() << endl;
-
-    mean3Bot->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
-    mean3Bot->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
-    meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
-    meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp -=5;
-
+    isFit = his->Fit("gaus","Q","",low,up);
+    if(!isFit){
+      TF1 *fit = his->GetFunction("gaus");
+      /*
+	cout << "sensor " << i << " axial slot mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
+	cout << "sensor " << i << " axial slot mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
+      */
+      outf << layer.Data() << " " 
+	   << fit->GetParameter(1)*1000. << " " 
+	   << fit->GetParError(1)*1000. << " " 
+	   << fit->GetParameter(2)*1000. << " " 
+	   << fit->GetParError(2)*1000. << " " 
+	   << his->GetEntries() << endl;
+      
+      mean3Bot->SetPoint(np2, x[npp-1], fit->GetParameter(1)*1000.);
+      mean3Bot->SetPointError(np2, 0., fit->GetParameter(2)*1000.); np2++;
+      meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
+      meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp -=5;
+    }else{      
+      mean3Bot->SetPoint(np2, x[npp-1], -9999.);
+      mean3Bot->SetPointError(np2, 0., 0.); np2++;
+      meanBot->SetPoint(npp, x[npp-1], -9999.); 
+      meanBot->SetPointError(npp, 0., 0.); npp -=5;
+    }
   }
 
 
