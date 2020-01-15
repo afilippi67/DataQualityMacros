@@ -17,6 +17,10 @@ void plotResidualsVSPosProfile_new(char* fname){
 
   gStyle->SetOptStat(0);
   TH1 *ReverseXAxis(TH1*);
+  TLine *zerol = new TLine(-20, 0., 20, 0.);
+  zerol->SetLineColor(kRed);
+  zerol->SetLineStyle(3);
+
   Double_t w = 1.2; // number of RMS for gaussian fit
   TString filename = fname;
   TCanvas *cTop = new TCanvas("cTop","Residuals in lab frame, TOP", 800, 1000);
@@ -112,7 +116,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up);
-    hpf->Draw();
+    hpf->Draw(); zerol->Draw("same");
     
     TF1 *fit = his->GetFunction("gaus");
 
@@ -131,7 +135,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); 
-    TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw();
+    TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
   }
@@ -151,7 +155,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     pad->cd();
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); hpf->Draw();
+    his->Fit("gaus","Q0","",low,up); hpf->Draw(); zerol->Draw("same");
     TF1 *fit = his->GetFunction("gaus");
 
     hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
@@ -169,7 +173,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up);     
-    TH1* hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw();
+    TH1* hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
     hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
@@ -186,7 +190,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); hpf->Draw();
+    his->Fit("gaus","Q0","",low,up); hpf->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
     hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
@@ -204,7 +208,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); 
-    hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw();
+    hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
   }
@@ -288,7 +292,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); 
-    TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw();
+    TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
     TF1 *fit = his->GetFunction("gaus");
     
     hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
@@ -305,7 +309,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); hpf->Draw();
+    his->Fit("gaus","Q0","",low,up); hpf->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
   }
@@ -325,7 +329,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); 
-    TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw();
+    TH1 *hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
     TF1 *fit = his->GetFunction("gaus");
 
     hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
@@ -342,7 +346,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); hpf->Draw();
+    his->Fit("gaus","Q0","",low,up); hpf->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
     hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
@@ -360,7 +364,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up);
-    hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw();
+    hpfrev = (TH1*)ReverseXAxis(hpf); hpfrev->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
     hisname = "residual_after_GBL_vs_u_hit_module_L"; hisname  += i;
@@ -377,7 +381,7 @@ void plotResidualsVSPosProfile_new(char* fname){
     pad->cd();
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
-    his->Fit("gaus","Q0","",low,up); hpf->Draw();
+    his->Fit("gaus","Q0","",low,up); hpf->Draw(); zerol->Draw("same");
     fit = his->GetFunction("gaus");
 
   }
