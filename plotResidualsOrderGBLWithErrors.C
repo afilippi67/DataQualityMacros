@@ -115,11 +115,11 @@ void plotResidualsOrderGBLWithErrors(char* fname){
   ic = 2;
   Int_t ipad=0;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "h_res_gbl_module_L"; hisname  += i;
+    TString hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_sensor0";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
-    TString hisnameIni = "h_res_module_L"; hisnameIni  += i;
+    TString hisnameIni = "residual_after_GBL_module_L"; hisnameIni  += i;
     hisnameIni += "t_halfmodule_axial_sensor0";
     TH1D *hisIni = (TH1D*) f->Get(hisnameIni.Data());
     Double_t lo = hisIni->GetXaxis()->GetXmin();
@@ -154,11 +154,11 @@ void plotResidualsOrderGBLWithErrors(char* fname){
     meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
     meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
 
-    hisname = "h_res_gbl_module_L"; hisname  += i;
+    hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_sensor0";
     layer = "L"; layer+=i; layer+= "TS"; 
     his = (TH1D*) f->Get(hisname.Data());
-    hisnameIni = "h_res_module_L"; hisnameIni  += i;
+    hisnameIni = "residual_after_GBL_module_L"; hisnameIni  += i;
     hisnameIni += "t_halfmodule_stereo_sensor0";
     hisIni = (TH1D*) f->Get(hisnameIni.Data());
     lo = hisIni->GetXaxis()->GetXmin();
@@ -199,11 +199,11 @@ void plotResidualsOrderGBLWithErrors(char* fname){
   }
   Int_t np1=1, np2=1;
   for(Int_t i=4; i<7; i++){
-    TString hisname = "h_res_gbl_module_L"; hisname  += i;
+    TString hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "TAHo"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
-    TString hisnameIni = "h_res_module_L"; hisnameIni  += i;
+    TString hisnameIni = "residual_after_GBL_module_L"; hisnameIni  += i;
     hisnameIni += "t_halfmodule_axial_hole_sensor0";
     TH1D *hisIni = (TH1D*) f->Get(hisnameIni.Data());
     Double_t lo = hisIni->GetXaxis()->GetXmin();
@@ -240,11 +240,11 @@ void plotResidualsOrderGBLWithErrors(char* fname){
     meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
     meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
 
-    hisname = "h_res_gbl_module_L"; hisname  += i;
+    hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_hole_sensor0";
     layer = "L"; layer+=i; layer+= "TSHo"; 
     his = (TH1D*) f->Get(hisname.Data());
-    hisnameIni = "h_res_module_L"; hisnameIni  += i;
+    hisnameIni = "residual_after_GBL_module_L"; hisnameIni  += i;
     hisnameIni += "t_halfmodule_stereo_hole_sensor0";
     hisIni = (TH1D*) f->Get(hisnameIni.Data());
     lo = hisIni->GetXaxis()->GetXmin();
@@ -281,11 +281,11 @@ void plotResidualsOrderGBLWithErrors(char* fname){
     meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.);
     meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
 
-    hisname = "h_res_gbl_module_L"; hisname  += i;
+    hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TASl";     
     his = (TH1D*) f->Get(hisname.Data());
-    hisnameIni = "h_res_module_L"; hisnameIni  += i;
+    hisnameIni = "residual_after_GBL_module_L"; hisnameIni  += i;
     hisnameIni += "t_halfmodule_axial_slot_sensor0";
     hisIni = (TH1D*) f->Get(hisnameIni.Data());
     lo = hisIni->GetXaxis()->GetXmin();
@@ -323,11 +323,11 @@ void plotResidualsOrderGBLWithErrors(char* fname){
     meanTop->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
     meanTop->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
 
-    hisname = "h_res_gbl_module_L"; hisname  += i;
+    hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TSSl"; 
     his = (TH1D*) f->Get(hisname.Data());
-    hisnameIni = "h_res_module_L"; hisnameIni  += i;
+    hisnameIni = "residual_after_GBL_module_L"; hisnameIni  += i;
     hisnameIni += "t_halfmodule_stereo_slot_sensor0";
     hisIni = (TH1D*) f->Get(hisnameIni.Data());
     lo = hisIni->GetXaxis()->GetXmin();
@@ -438,7 +438,7 @@ void plotResidualsOrderGBLWithErrors(char* fname){
   ipad = 0;
   np = np1 = np2 = npp = 1;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "h_res_gbl_module_L"; hisname  += i;
+    TString hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_sensor0";
     TString layer = "L"; layer+=i; layer+= "BS"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
@@ -473,7 +473,7 @@ void plotResidualsOrderGBLWithErrors(char* fname){
     meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
     meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
 
-    hisname = "h_res_gbl_module_L"; hisname  += i;
+    hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_sensor0";
     layer = "L"; layer+=i; layer+= "BA"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -510,7 +510,7 @@ void plotResidualsOrderGBLWithErrors(char* fname){
 
   }
   for(Int_t i=4; i<7; i++){
-    TString hisname = "h_res_gbl_module_L"; hisname  += i;
+    TString hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
     TH1D *his = (TH1D*) f->Get(hisname.Data());
@@ -546,7 +546,7 @@ void plotResidualsOrderGBLWithErrors(char* fname){
     meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
     meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
 
-    hisname = "h_res_gbl_module_L"; hisname  += i;
+    hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_hole_sensor0";
     layer = "L"; layer+=i; layer+= "BAHo"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -582,7 +582,7 @@ void plotResidualsOrderGBLWithErrors(char* fname){
     meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
     meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
 
-    hisname = "h_res_gbl_module_L"; hisname  += i;
+    hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BSSl"; 
     his = (TH1D*) f->Get(hisname.Data());
@@ -619,7 +619,7 @@ void plotResidualsOrderGBLWithErrors(char* fname){
     meanBot->SetPoint(npp, x[npp-1], fit->GetParameter(1)*1000.); 
     meanBot->SetPointError(npp, 0., fit->GetParameter(2)*1000.); npp++;
 
-    hisname = "h_res_gbl_module_L"; hisname  += i;
+    hisname = "residual_after_GBL_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BASl"; 
     his = (TH1D*) f->Get(hisname.Data());
