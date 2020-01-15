@@ -4,38 +4,36 @@
 #include <Riostream.h>
 #include <TCanvas.h>
 #include <TStyle.h>
-#include <TBox.h>
-#include <TFile.h>
 #include <TH2D.h>
+#include <TFile.h>
 
 void plotXY(char* fname){
 
-  // input: root file from GBL
+  // input: root filename out of GBL
+  // output: y vs x in the sensor reference system, no axes flipped
 
   gStyle->SetOptStat(0);
   Double_t w = 1.2; // number of RMS for gaussian fit
   TString filename = fname;
+  cout << filename.Data() << endl;
   TCanvas *cTop = new TCanvas("cTop","Residuals in lab frame, TOP", 800, 1000);
   TCanvas *cBot = new TCanvas("cBot","Residuals in lab frame, BOTTOM",800, 1000);
+  //  cTop->Divide(3,12);
+  //  cBot->Divide(3,12);
   cTop->SetFillColor(kBlue-10); cTop->SetFillStyle(3001);
   cBot->SetFillColor(kMagenta-10); cBot->SetFillStyle(3001);
-  Double_t halfWid = 38.34/2.;
-  Double_t halfLen = 98.33/2.;
-  TBox *module = new TBox(-halfLen, -halfWid, halfLen, halfWid);
-  module->SetLineColor(kMagenta);
-  module->SetFillStyle(0);
-
   Int_t ic=0;
   TFile *f = new TFile(filename.Data());
   // extract string 
   Int_t idx2 = filename.Index("/");
   Int_t idx1 = filename.Index("_");
   TString outn = filename(idx1+1,idx2-(idx1+1));
-  TString outname ="predXY_"; outname += outn.Data(); outname += ".txt";
-  TString topName ="predXY_"; topName += outn.Data(); topName += "_topO.gif";
-  TString botName ="predXY_"; botName += outn.Data(); botName += "_botO.gif";
+  TString outname ="predNoInvXY_"; outname += outn.Data(); outname += ".txt";
+  TString topName ="predNoInvXY_"; topName += outn.Data(); topName += "_topO.gif";
+  TString botName ="predNoInvXY_"; botName += outn.Data(); botName += "_botO.gif";
   //  ofstream outf(outname.Data());
   // top
+  cout << " TOP " << endl;
   Int_t nrow = 13;
   Double_t space = 0.007;
   Double_t space1 = 0.03;
@@ -74,7 +72,6 @@ void plotXY(char* fname){
   y2 = y1; y1 = 1./13.*(--nrow)-space1;
   TPad *tp17 = new TPad("tp17","tp17",0.+off,y1,0.33+off,y2);
   TPad *tp18 = new TPad("tp18","tp18",0.66-off,y1,1.-off,y2);
-  cout << " TOP " << endl;
 
   cTop->cd();
   tp1->Draw();
@@ -99,7 +96,7 @@ void plotXY(char* fname){
   ic = 2;
   Int_t ipad=0;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "h_xy_module_L"; hisname  += i;
+    TString hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_sensor0";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
@@ -112,13 +109,9 @@ void plotXY(char* fname){
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up);
     his2->Draw("colz");
-    module->Draw("same");
     TF1 *fit = his->GetFunction("gaus");
-    // cout << "sensor " << i << " axial mean :  " << his->GetMean()*1000. << " - RMS : " << his->GetRMS()*1000. << " (um) " << " " << his->GetEntries() << endl;
-    // cout << "sensor " << i << " axial mu :  " << fit->GetParameter(1)*1000. << " - sigma : " << fit->GetParameter(2)*1000. << " (um) " << endl;
-    // outf << layer.Data() << " " << fit->GetParameter(1)*1000. << " " << fit->GetParameter(2)*1000. << " " << his->GetEntries() << endl;
 
-    hisname = "h_xy_module_L"; hisname  += i;
+    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_sensor0";
     layer = "L"; layer+=i; layer+= "TS"; 
     his2 = (TH2D*) f->Get(hisname.Data());
@@ -130,23 +123,15 @@ void plotXY(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q","",low,up); his2->Draw("colz");
-    module->Draw("same");
     fit = his->GetFunction("gaus");
   }
   //  ic = 19;
   for(Int_t i=4; i<7; i++){
-    TString hisname = "h_xy_module_L"; hisname  += i;
-    TString hisname2 = hisname;
+    TString hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_hole_sensor0";
-    hisname2 += "t_halfmodule_axial_slot_sensor0";
-    TH2D *hisOther = (TH2D*) f->Get(hisname2.Data());
-    Double_t norma2 = hisOther->GetMaximum();
     TString layer = "L"; layer+=i; layer+= "TAHo"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();     
-    Double_t norma1 = his2->GetMaximum();
-    Double_t normamax = TMath::Max(norma1,norma2);
-    his2->SetMaximum(normamax);
+    TH1D *his = (TH1D*)his2->ProjectionY();
     ipad++;
     TString pd = "tp"; pd+=ipad;
     TPad *pad = (TPad*) cTop->GetListOfPrimitives()->FindObject(pd.Data());
@@ -154,20 +139,10 @@ void plotXY(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     TF1 *fit = his->GetFunction("gaus");
-    hisname = "h_xy_module_L"; hisname  += i;
-    hisname2 = hisname;
+
+    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_hole_sensor0";
-    hisname2 += "t_halfmodule_stereo_slot_sensor0";
-    TH2D *hisOther = (TH2D*) f->Get(hisname2.Data());
-    norma2 = hisOther->GetMaximum();
-    TString layer = "L"; layer+=i; layer+= "TAHo"; 
-    TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();     
-    norma1 = his2->GetMaximum();
-    normamax2 = TMath::Max(norma1,norma2);
-    his2->SetMaximum(normamax2);
     layer = "L"; layer+=i; layer+= "TSHo"; 
     his2 = (TH2D*) f->Get(hisname.Data());
     his = (TH1D*)his2->ProjectionY();
@@ -178,13 +153,12 @@ void plotXY(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     fit = his->GetFunction("gaus");
-    hisname = "h_xy_module_L"; hisname  += i;
+
+    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TASl";
     his2 = (TH2D*) f->Get(hisname.Data());
-    his2->SetMaximum(normamax);
     his = (TH1D*)his2->ProjectionY();     
     ipad--;
     pd = "tp"; pd+=ipad;
@@ -193,13 +167,12 @@ void plotXY(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     fit = his->GetFunction("gaus");
-    hisname = "h_xy_module_L"; hisname  += i;
+
+    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TSSl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his2->SetMaximum(normamax2);
     his = (TH1D*)his2->ProjectionY();     
     ipad++; ipad++;
     pd = "tp"; pd+=ipad;
@@ -208,8 +181,8 @@ void plotXY(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     fit = his->GetFunction("gaus");
+
   }
   cout << endl;
   cout << "------------------------" << endl;
@@ -273,50 +246,14 @@ void plotXY(char* fname){
   bp17->Draw();
   bp18->Draw();
 
-  cBot->cd();
-  bp1->Draw();
-  bp2->Draw();
-  bp3->Draw();
-  bp4->Draw();
-  bp5->Draw();
-  bp6->Draw();
-  bp7->Draw();
-  bp8->Draw();
-  bp9->Draw();
-  bp10->Draw();
-  bp11->Draw();
-  bp12->Draw();
-  bp13->Draw();
-  bp14->Draw();
-  bp15->Draw();
-  bp16->Draw();
-  bp17->Draw();
-  bp18->Draw();
-
   ic=0;
   ipad = 0;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "h_xy_module_L"; hisname  += i;
-    TString hisname2 = hisname;
+    TString hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_sensor0";
-    hisname2 += "b_halfmodule_axial_sensor0";
-    TH2D *hisOther = (TH2D*) f->Get(hisname2.Data());
-    Double_t norma2 = hisOther->GetMaximum();
     TString layer = "L"; layer+=i; layer+= "BS"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    Double_t norma1 = his2->GetMaximum();
-    Double_t normamax = TMath::Max(norma1,norma2);
-    //    his2->SetMaximum(normamax);
     TH1D *his = (TH1D*)his2->ProjectionY();     
-    if(layer.Contains("1")){his->SetFillColor(kRed);}
-    else if(layer.Contains("2")){his->SetFillColor(kOrange);}
-    else if(layer.Contains("3")){his->SetFillColor(kYellow);}
-    else if(layer.Contains("4")){his->SetFillColor(kGreen);}
-    else if(layer.Contains("5")){his->SetFillColor(kCyan);}
-    else if(layer.Contains("6")){his->SetFillColor(kBlue);}
-    if(layer.Contains("A")){his->SetFillStyle(3007);}
-    else if(layer.Contains("S")){his->SetFillStyle(3004);}
-    //    cBot->cd(++ic);
     ipad++;
     TString pd = "bp"; pd+=ipad;
     TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
@@ -324,13 +261,12 @@ void plotXY(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     TF1 *fit = his->GetFunction("gaus");
-    hisname = "h_xy_module_L"; hisname  += i;
+    
+    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_sensor0";
     layer = "L"; layer+=i; layer+= "BA"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    //   his2->SetMaximum(normamax);
     his = (TH1D*)his2->ProjectionY();     
     ipad++;
     pd = "bp"; pd+=ipad;
@@ -339,22 +275,15 @@ void plotXY(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     fit = his->GetFunction("gaus");
+
   }
   for(Int_t i=4; i<7; i++){
-    TString hisname = "h_xy_module_L"; hisname  += i;
-    TString hisname2 = hisname;
+    TString hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_hole_sensor0";
-    hisname2 += "b_halfmodule_stereo_slot_sensor0";
-    TH2D *hisOther = (TH2D*) f->Get(hisname2.Data());
-    Double_t norma2 = hisOther->GetMaximum();
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
     TH1D *his = (TH1D*)his2->ProjectionY();     
-    Double_t norma1 = his2->GetMaximum();
-    Double_t normamax1 = TMath::Max(norma1,norma2);
-    his2->SetMaximum(normamax1);
     ipad++; 
     TString pd = "bp"; pd+=ipad;
     TPad *pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
@@ -362,20 +291,13 @@ void plotXY(char* fname){
     Double_t low = his->GetMean()-w*his->GetRMS();
     Double_t up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     TF1 *fit = his->GetFunction("gaus");
-    hisname = "h_xy_module_L"; hisname  += i;
-    TString hisname2 = hisname;
+
+    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_hole_sensor0";
-    hisname2 += "b_halfmodule_axial_slot_sensor0";
-    TH2D *hisOther = (TH2D*) f->Get(hisname2.Data());
-    Double_t norma2 = hisOther->GetMaximum();
-    TString layer = "L"; layer+=i; layer+= "BAHo"; 
-    TH2D *his2 = (TH2D*) f->Get(hisname.Data());
-    TH1D *his = (TH1D*)his2->ProjectionY();     
-    Double_t norma1 = his2->GetMaximum();
-    Double_t normamax2 = TMath::Max(norma1,norma2);
-    his2->SetMaximum(normamax2);
+    layer = "L"; layer+=i; layer+= "BAHo"; 
+    his2 = (TH2D*) f->Get(hisname.Data());
+    his = (TH1D*)his2->ProjectionY();     
     ipad++; ipad++;
     pd = "bp"; pd+=ipad;
     pad = (TPad*) cBot->GetListOfPrimitives()->FindObject(pd.Data());
@@ -383,13 +305,12 @@ void plotXY(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     fit = his->GetFunction("gaus");
-    hisname = "h_xy_module_L"; hisname  += i;
+
+    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BSSl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his2->SetMaximum(normamax1);
     his = (TH1D*)his2->ProjectionY();     
     ipad--;
     pd = "bp"; pd+=ipad;
@@ -398,13 +319,12 @@ void plotXY(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     fit = his->GetFunction("gaus");
-    hisname = "h_xy_module_L"; hisname  += i;
+
+    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BASl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
-    his2->SetMaximum(normamax2);
     his = (TH1D*)his2->ProjectionY();     
     ipad++; ipad++;
     pd = "bp"; pd+=ipad;
@@ -413,8 +333,8 @@ void plotXY(char* fname){
     low = his->GetMean()-w*his->GetRMS();
     up = his->GetMean()+w*his->GetRMS();    
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
-    module->Draw("same");
     fit = his->GetFunction("gaus");
+
   }
 
   //  outf.close();
