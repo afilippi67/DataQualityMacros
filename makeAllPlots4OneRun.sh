@@ -23,7 +23,7 @@ root -b -l -q plotSingleSensor.C\(\"5H\",\"$FILE\"\)
 root -b -l -q plotSingleSensor.C\(\"5S\",\"$FILE\"\)
 root -b -l -q plotSingleSensor.C\(\"6H\",\"$FILE\"\)
 root -b -l -q plotSingleSensor.C\(\"6S\",\"$FILE\"\)
-root -b -l -q survey_d0z0.C\(\"$FILE\"\)
+root -b -l -q survey_d0z0p.C\(\"$FILE\"\)
 
 mkdir $TYPE
 mv -fv *__* $TYPE/.
