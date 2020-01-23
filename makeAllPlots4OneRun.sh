@@ -46,7 +46,7 @@ root -b -l -q plotSingleSensor.C\(\"7H\",\"$FILE\"\)
 #read -p "Press enter to continue"
 root -b -l -q plotSingleSensor.C\(\"7S\",\"$FILE\"\)
 #read -p "Press enter to continue"
-#root -b -l -q survey_d0z0p.C\(\"$FILE\"\,$YR\)
+root -b -l -q survey_d0z0.C\(\"$FILE\"\,$YR\)
 #read -p "Press enter to continue"
 
 mkdir $TYPE
