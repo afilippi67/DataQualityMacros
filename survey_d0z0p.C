@@ -139,16 +139,17 @@ void survey_d0z0p(const Char_t* filename, Int_t yr=2019){
   Int_t start;
   if(yr==2015){start = his5->FindBin(0.5);}
   else if(yr==2016){start = his5->FindBin(2.);}
-  else if(yr==2019){cout << yr << endl; start = his5->FindBin(0.8);}
+  else if(yr==2019){start = his5->FindBin(3.);}
   Int_t i;
   for (i=start;i<his5->GetNbinsX();i++){
     binc = his5->GetBinContent(i);
+    //    cout << i << " " << binc << endl;
     if(binc == 0.) break;
   }
   Int_t limit = i;
   his5->GetXaxis()->SetRangeUser(his5->GetXaxis()->GetBinCenter(limit/2.), his5->GetXaxis()->GetBinCenter(limit)); 
   Double_t maxPeak = his5->GetMaximumBin();
-  cout << limit << " " << his5->GetXaxis()->GetBinCenter(maxPeak) << endl;
+  cout << start << " " << limit << " " << his5->GetXaxis()->GetBinCenter(maxPeak) << endl;
   Double_t wid;
   if((his5->GetXaxis()->GetBinCenter(maxPeak))>2.){
     wid=0.25;
@@ -160,6 +161,10 @@ void survey_d0z0p(const Char_t* filename, Int_t yr=2019){
     his5->GetXaxis()->GetBinCenter(maxPeak) + wid << endl;
   Float_t low = his5->GetXaxis()->GetBinCenter(maxPeak) - wid;
   Float_t up = his5->GetXaxis()->GetBinCenter(maxPeak) + wid;
+  // use start and limit as range for the fit
+  low = his5->GetXaxis()->GetBinCenter(start);
+  up = his5->GetXaxis()->GetBinCenter(limit);
+
   his5->GetXaxis()->UnZoom();
   if(his5->Fit("gaus","Q","",low,up)){
     TF1 *fit = his5->GetFunction("gaus"); 
@@ -170,11 +175,19 @@ void survey_d0z0p(const Char_t* filename, Int_t yr=2019){
     mean_top = fit->GetParameter(1);
   }
 
+  for (i=start;i<his6->GetNbinsX();i++){
+    binc = his6->GetBinContent(i);
+    //    cout << i << " " << binc << endl;
+    if(binc == 0.) break;
+  }
+  limit = i;
   his6->GetXaxis()->SetRangeUser(his6->GetXaxis()->GetBinCenter(limit/2.), his6->GetXaxis()->GetBinCenter(limit)); 
   maxPeak = his6->GetMaximumBin();
   cout << maxPeak << " " << his6->GetXaxis()->GetBinCenter(maxPeak) << endl;
-  low = his6->GetXaxis()->GetBinCenter(maxPeak) - wid;
-  up = his6->GetXaxis()->GetBinCenter(maxPeak) + wid;
+  //  low = his6->GetXaxis()->GetBinCenter(maxPeak) - wid;
+  //  up = his6->GetXaxis()->GetBinCenter(maxPeak) + wid;
+  low = his6->GetXaxis()->GetBinCenter(start);
+  up = his6->GetXaxis()->GetBinCenter(limit);
   his6->GetXaxis()->UnZoom();
   c->cd(pad++);
   Double_t meanP;
