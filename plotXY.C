@@ -28,9 +28,9 @@ void plotXY(char* fname){
   Int_t idx2 = filename.Index("/");
   Int_t idx1 = filename.Index("_");
   TString outn = filename(idx1+1,idx2-(idx1+1));
-  TString outname ="predNoInvXY_"; outname += outn.Data(); outname += ".txt";
-  TString topName ="predNoInvXY_"; topName += outn.Data(); topName += "_topO.gif";
-  TString botName ="predNoInvXY_"; botName += outn.Data(); botName += "_botO.gif";
+  TString outname ="plotXY_"; outname += outn.Data(); outname += ".txt";
+  TString topName ="plotXY_"; topName += outn.Data(); topName += "_topO.gif";
+  TString botName ="plotXY_"; botName += outn.Data(); botName += "_botO.gif";
   //  ofstream outf(outname.Data());
   // top
   cout << " TOP " << endl;
@@ -96,7 +96,7 @@ void plotXY(char* fname){
   ic = 2;
   Int_t ipad=0;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    TString hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_sensor0";
     TString layer = "L"; layer+=i; layer+= "TA"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
@@ -111,7 +111,7 @@ void plotXY(char* fname){
     his2->Draw("colz");
     TF1 *fit = his->GetFunction("gaus");
 
-    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_sensor0";
     layer = "L"; layer+=i; layer+= "TS"; 
     his2 = (TH2D*) f->Get(hisname.Data());
@@ -127,7 +127,7 @@ void plotXY(char* fname){
   }
   //  ic = 19;
   for(Int_t i=4; i<7; i++){
-    TString hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    TString hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "TAHo"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
@@ -141,7 +141,7 @@ void plotXY(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     TF1 *fit = his->GetFunction("gaus");
 
-    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_hole_sensor0";
     layer = "L"; layer+=i; layer+= "TSHo"; 
     his2 = (TH2D*) f->Get(hisname.Data());
@@ -155,7 +155,7 @@ void plotXY(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     fit = his->GetFunction("gaus");
 
-    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TASl";
     his2 = (TH2D*) f->Get(hisname.Data());
@@ -169,7 +169,7 @@ void plotXY(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     fit = his->GetFunction("gaus");
 
-    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "t_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "TSSl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
@@ -249,7 +249,7 @@ void plotXY(char* fname){
   ic=0;
   ipad = 0;
   for(Int_t i=1; i<4; i++){
-    TString hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    TString hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_sensor0";
     TString layer = "L"; layer+=i; layer+= "BS"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
@@ -263,7 +263,7 @@ void plotXY(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     TF1 *fit = his->GetFunction("gaus");
     
-    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_sensor0";
     layer = "L"; layer+=i; layer+= "BA"; 
     his2 = (TH2D*) f->Get(hisname.Data());
@@ -279,7 +279,7 @@ void plotXY(char* fname){
 
   }
   for(Int_t i=4; i<7; i++){
-    TString hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    TString hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_hole_sensor0";
     TString layer = "L"; layer+=i; layer+= "BSHo"; 
     TH2D *his2 = (TH2D*) f->Get(hisname.Data());
@@ -293,7 +293,7 @@ void plotXY(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     TF1 *fit = his->GetFunction("gaus");
 
-    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_hole_sensor0";
     layer = "L"; layer+=i; layer+= "BAHo"; 
     his2 = (TH2D*) f->Get(hisname.Data());
@@ -307,7 +307,7 @@ void plotXY(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     fit = his->GetFunction("gaus");
 
-    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_stereo_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BSSl"; 
     his2 = (TH2D*) f->Get(hisname.Data());
@@ -321,7 +321,7 @@ void plotXY(char* fname){
     his->Fit("gaus","Q0","",low,up); his2->Draw("colz");
     fit = his->GetFunction("gaus");
 
-    hisname = "hit_v_vs_u_sensor-frame_module_L"; hisname  += i;
+    hisname = "hit_u_vs_v_sensor_frame_module_L"; hisname  += i;
     hisname += "b_halfmodule_axial_slot_sensor0";
     layer = "L"; layer+=i; layer+= "BASl"; 
     his2 = (TH2D*) f->Get(hisname.Data());

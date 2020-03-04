@@ -11,6 +11,9 @@ root -b -l -q plotResidualsUVSPosV_new.C\(\"$FILE\"\)
 root -b -l -q plotResidualsUVSPosVProfile_new.C\(\"$FILE\"\)
 root -b -l -q plotXY.C\(\"$FILE\"\)
 root -b -l -q plotPredXY.C\(\"$FILE\"\)
+root -b -l -q plotPredXY_pos.C\(\"$FILE\"\)
+root -b -l -q plotPredXY_neg.C\(\"$FILE\"\)
+root -b -l -q plotPredXY_posneg.C\(\"$FILE\"\)
 root -b -l -q plotKinkLambda.C\(\"$FILE\"\)
 root -b -l -q plotKinkPhi.C\(\"$FILE\"\)
 #
@@ -27,6 +30,7 @@ root -b -l -q survey_d0z0p.C\(\"$FILE\"\)
 
 mkdir $TYPE
 mv -fv *__* $TYPE/.
+mv -fv plotXY*.gif $TYPE/.
 mv -fv *$RUN\*.* $TYPE/.
 mv -fv *scatter*.gif $TYPE/.
 mv -fv *profile*.gif $TYPE/.
