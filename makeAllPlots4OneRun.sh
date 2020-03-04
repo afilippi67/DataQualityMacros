@@ -19,6 +19,9 @@ root -b -l -q plotResidualsUVSVProfile.C\(\"$FILE\"\)
 root -b -l -q plotHitXY.C\(\"$FILE\"\)
 #read -p "Press enter to continue"
 root -b -l -q plotPredXY.C\(\"$FILE\"\)
+root -b -l -q plotPredXY_pos.C\(\"$FILE\"\)
+root -b -l -q plotPredXY_neg.C\(\"$FILE\"\)
+root -b -l -q plotPredXY_posneg.C\(\"$FILE\"\)
 #read -p "Press enter to continue"
 root -b -l -q plotKinkLambda.C\(\"$FILE\"\)
 #read -p "Press enter to continue"
@@ -46,11 +49,13 @@ root -b -l -q plotSingleSensor.C\(\"7H\",\"$FILE\"\)
 #read -p "Press enter to continue"
 root -b -l -q plotSingleSensor.C\(\"7S\",\"$FILE\"\)
 #read -p "Press enter to continue"
-root -b -l -q survey_d0z0.C\(\"$FILE\"\,$YR\)
+root -b -l -q survey_d0z0p.C\(\"$FILE\"\,$YR\)
 #read -p "Press enter to continue"
 
 mkdir $TYPE
 mv -fv *__* $TYPE/.
+mv -fv predicted* $TYPE/.
+mv -fv hit* $TYPE/.
 mv -fv *$RUN\*.* $TYPE/.
 mv -fv *Kink*.txt $TYPE
 mv -vf *sensor_*.gif $TYPE/.
