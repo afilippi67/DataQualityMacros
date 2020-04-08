@@ -935,9 +935,12 @@ void plotResidualsOrderGBLWithErrors(const char* fname){
   zero->Draw("same");
 
   outf.close();
+  cTop->cd();
   cTop->SaveAs(topName.Data());
+  cBot->cd();
   cBot->SaveAs(botName.Data());
   TString mean = "mean_"; mean += outn.Data(); mean += "_TopBot_GBL.gif";
+  cmeanAll->cd();
   cmeanAll->SaveAs(mean.Data());
 				
   TFile *g = new TFile("plotResidualsGBL__graphs.root","RECREATE");
