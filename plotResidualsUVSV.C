@@ -104,8 +104,8 @@ void plotResidualsUVSV(const char* fname){
   Int_t idx1 = filename.Index("_");
   TString outn = filename(idx1+1,idx2-(idx1+1));
   TString outname ="residualsUSVpred"; outname += outn.Data(); outname += "_scat.txt";
-  TString topName ="residualsUSVpred"; topName += outn.Data(); topName += "_scat_top.gif";
-  TString botName ="residualsUSVpred"; botName += outn.Data(); botName += "_scat_bot.gif";
+  TString topName ="residualsUSVpred"; topName += outn.Data(); topName += "_scat_top.pdf";
+  TString botName ="residualsUSVpred"; botName += outn.Data(); botName += "_scat_bot.pdf";
   ofstream outf(outname.Data());
   // top
   

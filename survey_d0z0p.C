@@ -202,7 +202,7 @@ void survey_d0z0p(const Char_t* filename, Int_t yr=2019){
     cout << "----------" << endl; 
   }
 
-  c->SaveAs("survey_d0z0p.gif");
+  c->SaveAs("survey_d0z0p.pdf");
 
   //////////////////////////////////////
 
@@ -520,10 +520,10 @@ void survey_d0z0p(const Char_t* filename, Int_t yr=2019){
   lab5->Draw("same");
   
 
-  d0->SaveAs("d0_tb.gif");
-  z0->SaveAs("z0_tb.gif");
-  pmom->SaveAs("pmom_tb.gif");
-  xT->SaveAs("xT_tb.gif");
-  yT->SaveAs("yT_tb.gif");
+  d0->SaveAs("d0_tb.pdf");
+  z0->SaveAs("z0_tb.pdf");
+  pmom->SaveAs("pmom_tb.pdf");
+  xT->SaveAs("xT_tb.pdf");
+  yT->SaveAs("yT_tb.pdf");
 
 }

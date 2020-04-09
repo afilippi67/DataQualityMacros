@@ -99,8 +99,8 @@ void plotXY(const char* fname){
   Int_t idx1 = filename.Index("_");
   TString outn = filename(idx1+1,idx2-(idx1+1));
   TString outname ="hitVvsU"; outname += outn.Data(); outname += "_scatter.txt";
-  TString topName ="hitVvsU"; topName += outn.Data(); topName += "_scatter_top.gif";
-  TString botName ="hitVvsU"; botName += outn.Data(); botName += "_scatter_bot.gif";
+  TString topName ="hitVvsU"; topName += outn.Data(); topName += "_scatter_top.pdf";
+  TString botName ="hitVvsU"; botName += outn.Data(); botName += "_scatter_bot.pdf";
   ofstream outf(outname.Data());
   // top
   

@@ -388,9 +388,9 @@ void plotSingleSensor(const Char_t *sensor, const Char_t *file){
   his6bs->Draw("colz");
   
   cout << side.Data() << endl;
-  TString out = "sensor_"; out+=side; out+="_top_Plots.gif";
+  TString out = "sensor_"; out+=side; out+="_top_Plots.pdf";
   cTop->SaveAs(out.Data());
-  out = "sensor_"; out+=side; out+="_bot_Plots.gif";
+  out = "sensor_"; out+=side; out+="_bot_Plots.pdf";
   cBot->SaveAs(out.Data());
 
 }

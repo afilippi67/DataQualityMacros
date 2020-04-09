@@ -71,8 +71,8 @@ void plotResidualsVSPosProfile(const char* fname){
   Int_t idx1 = filename.Index("_");
   TString outn = filename(idx1+1,idx2-(idx1+1));
   TString outname ="residualsVSUhit"; outname += outn.Data(); outname += "_prof.txt";
-  TString topName ="residualsVSUhit"; topName += outn.Data(); topName += "_prof_top.gif";
-  TString botName ="residualsVSUhit"; botName += outn.Data(); botName += "_prof_bot.gif";
+  TString topName ="residualsVSUhit"; topName += outn.Data(); topName += "_prof_top.pdf";
+  TString botName ="residualsVSUhit"; botName += outn.Data(); botName += "_prof_bot.pdf";
   ofstream outf(outname.Data());
   // top
   

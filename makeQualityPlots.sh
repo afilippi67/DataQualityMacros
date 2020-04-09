@@ -7,4 +7,4 @@ export INP=$1
 export NAME=$2
 export YR=$3
 ./makeAllPlots4OneRun.sh $INP $NAME $YR
-gthumb run_$NAME/*.gif
+okular run_$NAME/*.pdf

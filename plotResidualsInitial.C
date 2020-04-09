@@ -44,8 +44,8 @@ void plotResidualsInitial(const char* fname){
   Int_t idx1 = filename.Index("_");
   TString outn = filename(idx1+1,idx2-(idx1+1));
   TString outname ="residuals_"; outname += outn.Data(); outname += "_ini.txt";
-  TString topName ="residuals_"; topName += outn.Data(); topName += "_top_ini.gif";
-  TString botName ="residuals_"; botName += outn.Data(); botName += "_bot_ini.gif";
+  TString topName ="residuals_"; topName += outn.Data(); topName += "_top_ini.pdf";
+  TString botName ="residuals_"; botName += outn.Data(); botName += "_bot_ini.pdf";
   ofstream outf(outname.Data());
   // top
   
@@ -939,7 +939,7 @@ void plotResidualsInitial(const char* fname){
   cTop->SaveAs(topName.Data());
   cBot->cd();
   cBot->SaveAs(botName.Data());
-  TString mean = "mean_"; mean += outn.Data(); mean += "_TopBot_ini.gif";
+  TString mean = "mean_"; mean += outn.Data(); mean += "_TopBot_ini.pdf";
   cmeanAll->cd();
   cmeanAll->SaveAs(mean.Data());
 				

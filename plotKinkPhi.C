@@ -44,8 +44,8 @@ void plotKinkPhi(const char* fname){
   Int_t idx1 = filename.Index("_");
   TString outn = filename(idx1+1,idx2-(idx1+1));
   TString outname ="phiKink_"; outname += outn.Data(); outname += ".txt";
-  TString topName ="phiKink_"; topName += outn.Data(); topName += "_top.gif";
-  TString botName ="phiKink_"; botName += outn.Data(); botName += "_bot.gif";
+  TString topName ="phiKink_"; topName += outn.Data(); topName += "_top.pdf";
+  TString botName ="phiKink_"; botName += outn.Data(); botName += "_bot.pdf";
   ofstream outf(outname.Data());
   // top
   
@@ -937,7 +937,7 @@ void plotKinkPhi(const char* fname){
   outf.close();
   cTop->SaveAs(topName.Data());
   cBot->SaveAs(botName.Data());
-  TString mean = "phiKink_"; mean += outn.Data(); mean += "_TopBot_ini.gif";
+  TString mean = "phiKink_"; mean += outn.Data(); mean += "_TopBot_ini.pdf";
   cmeanAll->SaveAs(mean.Data());
 				
   TFile *g = new TFile("plotPhiKink_graphs.root","RECREATE");

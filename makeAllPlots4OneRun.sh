@@ -58,8 +58,8 @@ mv -fv predicted* $TYPE/.
 mv -fv hit* $TYPE/.
 mv -fv *$RUN\*.* $TYPE/.
 mv -fv *Kink*.txt $TYPE
-mv -vf *sensor_*.gif $TYPE/.
-mv -fv *_tb.gif  $TYPE/. $TYPE/.
-mv -fv survey*.gif  $TYPE/. $TYPE/.
+mv -vf *sensor_*.pdf $TYPE/.
+mv -fv *_tb.pdf  $TYPE/. $TYPE/.
+mv -fv survey*.pdf  $TYPE/. $TYPE/.
 
 #root -b -l -q extractGeoQualityFromResiduals.C\(\"$TYPE\"\)
